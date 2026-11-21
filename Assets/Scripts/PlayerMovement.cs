@@ -55,8 +55,9 @@ public class PlayerMovement : MonoBehaviour
         pointerScreenPos = value.Get<Vector2>();
     }
 
-    public void OnClickMove(InputValue value)
+    public void OnClickToMove(InputValue value)
     {
+            Debug.Log("Hola");
         if(value.isPressed && currentMode == MovementMode.ClickToMove)
         {
             if(TryGetMouseWorldPosition(out Vector3 hitPoint))
@@ -90,6 +91,7 @@ public class PlayerMovement : MonoBehaviour
 
     private Vector3 GetFollowMouseDirection()
     {
+        
         if (TryGetMouseWorldPosition(out Vector3 mouseWorldPos))
         {
             return GetDirectionTowards(mouseWorldPos);
@@ -113,6 +115,7 @@ public class PlayerMovement : MonoBehaviour
     {
         Ray ray = mainCamera.ScreenPointToRay(pointerScreenPos);
 
+            
         if(Physics.Raycast(ray, out RaycastHit hit, 100f,groundLayer))
         {
             worldPos = hit.point;
