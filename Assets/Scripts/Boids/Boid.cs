@@ -13,6 +13,7 @@ public class Boid : MonoBehaviour {
 
     BoidSettings settings;
 
+    public float dangerRange = 0.5f;
     // State
     [HideInInspector]
     public Vector3 position;
@@ -42,6 +43,7 @@ public class Boid : MonoBehaviour {
     float panic;                         // 0 = calm, 1 = maximum fear (decays slowly)
     float currentMaxSpeed;               // maxSpeed, boosted while panicking
     const float calmDownRate = 0.5f;     // panic lost per second once the threat is gone
+    private float dangerPerception;
 
     // PLANE LOCK: the world Y at which this boid lives. Taken from its spawn position.
     float planeY;
@@ -54,6 +56,7 @@ public class Boid : MonoBehaviour {
     void Awake () {
         material = transform.GetComponentInChildren<MeshRenderer> ().material;
         cachedTransform = transform;
+        dangerPerception = Random.Range(-dangerRange, dangerRange);
     }
 
     public void Initialize (BoidSettings settings, Transform target) {
@@ -98,13 +101,13 @@ public class Boid : MonoBehaviour {
             away.y = 0f;
             float dist = away.magnitude;
             if (dist < settings.fleeRadius) {
-                urgency = 1f - dist / settings.fleeRadius;   // 0 at the edge, 1 on top of it
+                urgency = 1f - dist / settings.fleeRadius + dangerPerception;   // 0 at the edge, 1 on top of it
                 fleeDir = dist > 0.0001f ? away / dist : forward;
             }
         }
         // Panic rises instantly but fades slowly, so boids don't snap back to normal speed.
         panic = Mathf.Max (urgency, panic - calmDownRate * Time.deltaTime);
-        currentMaxSpeed = settings.maxSpeed * (1f + settings.fleeSpeedBoost * panic);
+        currentMaxSpeed = settings.maxSpeed * (Random.Range(-0.2f,0.2f)+1f + settings.fleeSpeedBoost * panic);
 
         if (target != null) {
             Vector3 offsetToTarget = (target.position - position);
