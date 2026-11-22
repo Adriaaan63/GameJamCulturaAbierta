@@ -20,6 +20,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float rotationSpeed = 15f;
     [SerializeField] private float stoppingDistance = 0.2f;
     [SerializeField] private float gravity = -9.81f;
+    [SerializeField] private float maxStamina = 10f;
+    [SerializeField] private float sprintMultiplier= 2f;
 
 
     [Header("Raycast Settings")]
@@ -48,6 +50,8 @@ public class PlayerMovement : MonoBehaviour
     private float verticalVelocity;
     [SerializeField] private Flashlight flashlight;
 
+    private bool sprinting = false;
+    private float stamina = 10f;
 
     private void Awake()
     {
@@ -56,6 +60,7 @@ public class PlayerMovement : MonoBehaviour
         // Cacheamos camara en Awake
         mainCamera = Camera.main;
         targetWorldPosition = transform.position;
+        stamina = maxStamina;
     }
 
     // Este método lo dispara automáticamente el componente "Player Input" 
@@ -169,12 +174,45 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    void OnSprint(InputValue value)
+    {
+        sprinting = value.isPressed;
+    }
+
+    private float CalculateSpeed(bool isMoving)
+    {
+        float finalSpeed = moveSpeed;
+        float staminaDrainRate = 3f;
+        float staminaRegenRate = 3f;
+
+        // Solo esprinta si mantiene el botón, tiene stamina y se está moviendo
+        if (sprinting && stamina > 0f && isMoving)
+        {
+            finalSpeed *= sprintMultiplier;
+            stamina = Mathf.Clamp(stamina - staminaDrainRate * Time.deltaTime, 0f, maxStamina);
+        }
+        else
+        {
+            stamina = Mathf.Clamp(stamina + staminaRegenRate * Time.deltaTime, 0f, maxStamina);
+        }
+
+        if(stamina <= 0f)
+        { 
+            sprinting = false;
+        }
+
+        return finalSpeed;
+    }
+
     private void ApplyMovement(Vector3 moveDirection)
     {
-        Vector3 finalVelocity = (moveDirection * moveSpeed) + (Vector3.up * verticalVelocity);
+        bool isMoving = moveDirection.sqrMagnitude > 0.01f;
+        float finalSpeed = CalculateSpeed(isMoving);
+
+        Vector3 finalVelocity = (moveDirection * finalSpeed) + (Vector3.up * verticalVelocity);
         controller.Move(finalVelocity * Time.deltaTime);
 
-        if(moveDirection.sqrMagnitude > 0.01f)
+        if (isMoving)
         {
             Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
