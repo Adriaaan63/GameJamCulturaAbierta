@@ -4,12 +4,14 @@
 //  - movement is locked to a horizontal plane ("PLANE LOCK")
 //  - hard obstacle collision: the real displacement is swept against obstacles and
 //    the boid slides along surfaces instead of going through them ("HARD COLLISION")
-//  - flees from a threat (the player) with panic speed boost ("FLEE")
-//  - herded by a flashlight beam and resisted by its edges ("FLASHLIGHT")
+//  - per-boid state machine: Idle / Fleeing / Panic ("STATE MACHINE")
+//  - fear accumulation, flashlight beam + edges, player flee circle
 
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+public enum BoidState { Idle, Fleeing, Panic }
 
 public class Boid : MonoBehaviour {
 
@@ -25,8 +27,7 @@ public class Boid : MonoBehaviour {
     public Vector3 forward;
     Vector3 velocity;
 
-    // To update:
-    Vector3 acceleration;
+    // To update (filled by BoidManager from the compute shader):
     [HideInInspector]
     public Vector3 avgFlockHeading;
     [HideInInspector]
@@ -40,13 +41,31 @@ public class Boid : MonoBehaviour {
     Material material;
     Transform cachedTransform;
     Transform target;
+    Color baseColour;
+    bool colourApplied;
+
+    // ---- STATE MACHINE ----
+    public BoidState State { get; private set; }
+    public float Fear { get; private set; }          // 0 = calm .. 1 = terrified
+    public bool InBeam { get; private set; }         // inside the flashlight beam this frame
+    public bool CanPanic { get { return State != BoidState.Panic && immunityTimer <= 0f; } }
+
+    float calmTimer;            // Fleeing: time without threat
+    float panicTimer;           // Panic: time left
+    float immunityTimer;        // after panic: can't panic again until 0
+    Vector3 panicDir;
+
+    // Idle wandering
+    bool idleWalking;
+    float idleTimer;
+    Vector3 idleHeading;
 
     // FLEE: set by BoidManager. Boids run away from this transform (e.g. the player).
     [HideInInspector]
     public Transform threat;
-    float panic;                         // 0 = calm, 1 = maximum fear (decays slowly)
-    float currentMaxSpeed;               // maxSpeed, boosted while panicking
-    const float calmDownRate = 0.5f;     // panic lost per second once the threat is gone
+    float agitation;                     // 0..1, rises instantly and decays slowly: drives the speed boost while fleeing
+    float currentMaxSpeed;               // desired / maximum speed for the current state
+    const float calmDownRate = 0.5f;     // agitation lost per second once the threat is gone
     float dangerPerception;              // this boid's fixed fear offset, set in Awake
 
     // FLASHLIGHT: set by BoidManager.
@@ -64,6 +83,9 @@ public class Boid : MonoBehaviour {
 
     void Awake () {
         material = transform.GetComponentInChildren<MeshRenderer> ().material;
+        if (material != null) {
+            baseColour = material.color;
+        }
         cachedTransform = transform;
         dangerPerception = Random.Range (-dangerRange, dangerRange);
     }
@@ -87,10 +109,14 @@ public class Boid : MonoBehaviour {
         position = cachedTransform.position;
         forward = flatForward;
 
-        currentMaxSpeed = settings.maxSpeed;
+        currentMaxSpeed = settings.idleSpeed;
 
-        float startSpeed = (settings.minSpeed + settings.maxSpeed) / 2;
-        velocity = flatForward * startSpeed;
+        // Everyone starts idle, at a random point of the walk / stop cycle.
+        State = BoidState.Idle;
+        idleWalking = Random.value < 0.5f;
+        idleHeading = flatForward;
+        idleTimer = RandomIn (idleWalking ? settings.idleWalkTime : settings.idleStopTime);
+        velocity = idleWalking ? flatForward * settings.idleSpeed : Vector3.zero;
     }
 
     public void SetColour (Color col) {
@@ -99,11 +125,27 @@ public class Boid : MonoBehaviour {
         }
     }
 
-    public void UpdateBoid () {
-        Vector3 acceleration = Vector3.zero;
+    // Called by BoidManager when the flashlight has frightened the herd too much.
+    public void EnterPanic (Vector3 direction, float duration) {
+        if (!CanPanic) {
+            return;
+        }
+        direction.y = 0f;
+        if (direction.sqrMagnitude < 0.0001f) {
+            direction = forward;
+        }
+        panicDir = direction.normalized;
+        panicTimer = duration;
+        State = BoidState.Panic;
+        Fear = 1f;
+    }
 
-        // FLEE: the circle around the player. How scared am I, and which way is "away"?
-        // (horizontal distance only)
+    public void UpdateBoid () {
+        float dt = Time.deltaTime;
+
+        // ---- 1. SENSE ------------------------------------------------------------------
+
+        // The circle around the player (horizontal distance only).
         Vector3 fleeDir = Vector3.zero;
         float urgency = 0f;
         if (threat != null && settings.fleeRadius > 0f) {
@@ -118,77 +160,124 @@ public class Boid : MonoBehaviour {
             }
         }
 
-        // FLASHLIGHT: am I inside the beam? If so I'm herded along its aim direction.
+        // The flashlight beam.
         Vector3 beamDir = Vector3.zero;
         float beamIntensity = 0f;
-        if (flashlight != null) {
-            flashlight.TryGetBeam (position, out beamDir, out beamIntensity);
+        InBeam = flashlight != null && flashlight.TryGetBeam (position, out beamDir, out beamIntensity);
+
+        // One number for "how threatened am I right now", 0..1.
+        float threatLevel = Mathf.Max (Mathf.Clamp01 (urgency), beamIntensity);
+        if (edgeState.inContact) {
+            threatLevel = Mathf.Max (threatLevel, 0.5f);   // being pushed by a beam edge is scary too
         }
 
-        // Panic rises instantly but fades slowly, so boids don't snap back to normal speed.
-        float fear = Mathf.Max (urgency, beamIntensity);
-        panic = Mathf.Max (fear, panic - calmDownRate * Time.deltaTime);
-        currentMaxSpeed = settings.maxSpeed * (Random.Range (-0.2f, 0.2f) + 1f + settings.fleeSpeedBoost * panic);
+        // ---- 2. FEAR, TIMERS, STATE TRANSITIONS -----------------------------------------
 
-        if (target != null) {
-            Vector3 offsetToTarget = (target.position - position);
-            acceleration = SteerTowards (offsetToTarget) * settings.targetWeight;
+        if (immunityTimer > 0f) {
+            immunityTimer -= dt;
         }
 
+        if (State == BoidState.Panic) {
+            Fear = 1f;
+        } else if (threatLevel > 0f) {
+            Fear = Mathf.Min (1f, Fear + threatLevel * settings.fearRiseRate * dt);
+        } else {
+            Fear = Mathf.Max (0f, Fear - settings.fearFallRate * dt);
+        }
+
+        // Short-term agitation: rises instantly, decays slowly. Drives the speed boost while fleeing.
+        agitation = Mathf.Max (Mathf.Max (urgency, beamIntensity), agitation - calmDownRate * dt);
+
+        switch (State) {
+            case BoidState.Idle:
+                if (threatLevel > 0f) {
+                    State = BoidState.Fleeing;
+                    calmTimer = 0f;
+                }
+                break;
+
+            case BoidState.Fleeing:
+                if (threatLevel > 0f) {
+                    calmTimer = 0f;
+                } else {
+                    calmTimer += dt;
+                    if (calmTimer >= settings.calmDownTime) {
+                        EnterIdle ();
+                    }
+                }
+                break;
+
+            case BoidState.Panic:
+                panicTimer -= dt;
+                if (panicTimer <= 0f) {
+                    ExitPanic (threatLevel > 0f);
+                }
+                break;
+        }
+
+        // ---- 3. FORCES (depend on the state) --------------------------------------------
+
+        Vector3 acceleration = Vector3.zero;
+
+        Vector3 offsetToCentre = Vector3.zero;
         if (numPerceivedFlockmates != 0) {
             centreOfFlockmates /= numPerceivedFlockmates;
-
-            Vector3 offsetToFlockmatesCentre = (centreOfFlockmates - position);
-
-            var alignmentForce = SteerTowards (avgFlockHeading) * settings.alignWeight;
-            var cohesionForce = SteerTowards (offsetToFlockmatesCentre) * settings.cohesionWeight;
-            var seperationForce = SteerTowards (avgAvoidanceHeading) * settings.seperateWeight;
-
-            acceleration += alignmentForce;
-            acceleration += cohesionForce;
-            acceleration += seperationForce;
+            offsetToCentre = centreOfFlockmates - position;
         }
 
-        // FLEE: push away from the player, stronger the closer he is.
-        if (urgency > 0f) {
-            acceleration += SteerTowards (fleeDir) * settings.fleeWeight * urgency;
+        float minSpeedNow;
+        switch (State) {
+            case BoidState.Idle:
+                currentMaxSpeed = settings.idleSpeed;
+                minSpeedNow = 0f;   // idle boids can stand still
+                acceleration = IdleForces (offsetToCentre, dt);
+                break;
+
+            case BoidState.Panic:
+                // Ignores the player, the beam and the herd. Only runs (obstacles are avoided below).
+                currentMaxSpeed = settings.panicSpeed;
+                minSpeedNow = settings.minSpeed;
+                acceleration = SteerTowards (panicDir) * settings.panicSteerWeight;
+                break;
+
+            default: // Fleeing
+                currentMaxSpeed = settings.maxSpeed * (Random.Range (-0.2f, 0.2f) + 1f + settings.fleeSpeedBoost * agitation);
+                minSpeedNow = settings.minSpeed;
+                acceleration = FleeingForces (offsetToCentre, fleeDir, urgency, beamDir, beamIntensity);
+                break;
         }
 
-        // FLASHLIGHT: inside the beam, go where the beam points (not sideways out of it).
-        if (beamIntensity > 0f) {
-            acceleration += SteerTowards (beamDir) * flashlight.herdWeight * beamIntensity;
-        }
-
+        // Obstacle avoidance applies in every state.
         if (IsHeadingForCollision ()) {
             Vector3 collisionAvoidDir = ObstacleRays ();
             Vector3 collisionAvoidForce = SteerTowards (collisionAvoidDir) * settings.avoidCollisionWeight;
             acceleration += collisionAvoidForce;
         }
 
+        // ---- 4. MOVE --------------------------------------------------------------------
+
         // PLANE LOCK (1/3): no force may push the boid up or down.
         acceleration.y = 0f;
 
-        velocity += acceleration * Time.deltaTime;
+        velocity += acceleration * dt;
 
         // PLANE LOCK (2/3): velocity stays horizontal.
         velocity.y = 0f;
 
         float speed = velocity.magnitude;
         Vector3 dir = speed > 0.0001f ? velocity / speed : forward;
-        speed = Mathf.Clamp (speed, settings.minSpeed, currentMaxSpeed);
+        speed = Mathf.Clamp (speed, minSpeedNow, currentMaxSpeed);
         velocity = dir * speed;
 
         Vector3 startPos = PushOutOfObstacles (cachedTransform.position);
-        Vector3 desiredPos = startPos + velocity * Time.deltaTime;
+        Vector3 desiredPos = startPos + velocity * dt;
 
-        // FLASHLIGHT: the beam's edges are moving, semi-permeable walls. They may hold the
-        // boid back, or push it forward (the rake). Obstacles still have the last word below.
-        if (flashlight != null) {
+        // The beam's edges are moving, semi-permeable walls. Panicking boids ignore them.
+        if (flashlight != null && State != BoidState.Panic) {
             desiredPos = flashlight.ResolveEdges (startPos, desiredPos, settings.boundsRadius, numPerceivedFlockmates, ref edgeState, ref velocity);
         }
 
-        // HARD COLLISION: move through the obstacle-aware routine instead of
-        // simply adding the displacement to the position.
+        // HARD COLLISION: obstacles have the last word.
         bool collided;
         Vector3 newPos = MoveWithCollisions (startPos, desiredPos - startPos, out collided);
 
@@ -199,6 +288,11 @@ public class Boid : MonoBehaviour {
             dir = velocity / s;
         }
 
+        // A panicking boid that hit a wall keeps running along it instead of grinding into it.
+        if (collided && State == BoidState.Panic && s > 0.0001f) {
+            panicDir = dir;
+        }
+
         // PLANE LOCK (3/3): pin the height, in case anything else nudged the transform.
         newPos.y = planeY;
         cachedTransform.position = newPos;
@@ -206,6 +300,114 @@ public class Boid : MonoBehaviour {
         cachedTransform.forward = dir;
         position = cachedTransform.position;
         forward = dir;
+
+        UpdateDebugColour ();
+    }
+
+    // STATE MACHINE ---------------------------------------------------------------------
+
+    void EnterIdle () {
+        State = BoidState.Idle;
+        calmTimer = 0f;
+        idleWalking = false;   // rest first
+        idleTimer = RandomIn (settings.idleStopTime);
+    }
+
+    void ExitPanic (bool stillThreatened) {
+        immunityTimer = settings.panicImmunityTime;
+        Fear = 0f;
+        agitation = 0f;
+        calmTimer = 0f;
+        edgeState = default (Flashlight.EdgeState);
+
+        if (stillThreatened) {
+            State = BoidState.Fleeing;
+        } else {
+            EnterIdle ();
+        }
+    }
+
+    // Walk a bit, stop, walk again, without any destination.
+    Vector3 IdleForces (Vector3 offsetToCentre, float dt) {
+        Vector3 force = Vector3.zero;
+
+        idleTimer -= dt;
+        if (idleTimer <= 0f) {
+            idleWalking = !idleWalking;
+            if (idleWalking) {
+                // New heading: turn up to 120 degrees from where we are facing.
+                idleHeading = Quaternion.AngleAxis (Random.Range (-120f, 120f), Vector3.up) * forward;
+                idleTimer = RandomIn (settings.idleWalkTime);
+            } else {
+                idleTimer = RandomIn (settings.idleStopTime);
+            }
+        }
+
+        if (idleWalking) {
+            force += SteerTowards (idleHeading);
+            if (numPerceivedFlockmates != 0) {
+                // Weak pull towards the neighbours so the herd doesn't dissolve while idle.
+                force += SteerTowards (offsetToCentre) * settings.idleCohesionWeight;
+            }
+        } else {
+            // Come to a stop.
+            force += Vector3.ClampMagnitude (-velocity * 5f, settings.maxSteerForce);
+        }
+
+        // Personal space, only if someone is actually too close.
+        if (avgAvoidanceHeading.sqrMagnitude > 0.0001f) {
+            force += SteerTowards (avgAvoidanceHeading) * settings.seperateWeight;
+        }
+
+        return force;
+    }
+
+    // The herd behaviour: flocking + flee from the player + herded by the beam.
+    Vector3 FleeingForces (Vector3 offsetToCentre, Vector3 fleeDir, float urgency, Vector3 beamDir, float beamIntensity) {
+        Vector3 force = Vector3.zero;
+
+        if (target != null) {
+            Vector3 offsetToTarget = (target.position - position);
+            force += SteerTowards (offsetToTarget) * settings.targetWeight;
+        }
+
+        if (numPerceivedFlockmates != 0) {
+            force += SteerTowards (avgFlockHeading) * settings.alignWeight;
+            force += SteerTowards (offsetToCentre) * settings.cohesionWeight;
+            force += SteerTowards (avgAvoidanceHeading) * settings.seperateWeight;
+        }
+
+        // Push away from the player, stronger the closer he is.
+        if (urgency > 0f) {
+            force += SteerTowards (fleeDir) * settings.fleeWeight * urgency;
+        }
+
+        // Inside the beam, go where the beam points (not sideways out of it).
+        if (beamIntensity > 0f) {
+            force += SteerTowards (beamDir) * flashlight.herdWeight * beamIntensity;
+        }
+
+        return force;
+    }
+
+    static float RandomIn (Vector2 range) {
+        return Random.Range (Mathf.Min (range.x, range.y), Mathf.Max (range.x, range.y));
+    }
+
+    // DEBUG COLOUR ----------------------------------------------------------------------
+
+    void UpdateDebugColour () {
+        if (material == null) {
+            return;
+        }
+
+        if (settings.debugFearColour) {
+            material.color = Color.Lerp (settings.calmColour, settings.terrifiedColour, Fear);
+            colourApplied = true;
+        } else if (colourApplied) {
+            material.color = baseColour;   // switched off at runtime: restore the original colour
+            colourApplied = false;
+        }
     }
 
     // HARD COLLISION ------------------------------------------------------------------

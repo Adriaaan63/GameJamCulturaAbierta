@@ -66,6 +66,8 @@ public class Flashlight : MonoBehaviour {
     float dt = 0.016f;
     bool hasState;
     bool wasActive;
+    
+    public int BoidsInBeam { get; set; }
 
     // Call once per frame, before the boids are updated.
     public void Refresh () {
@@ -93,6 +95,8 @@ public class Flashlight : MonoBehaviour {
         dt = Mathf.Max (Time.deltaTime, 0.0001f);
         wasActive = active;
         hasState = true;
+        
+        Debug.Log(BoidsInBeam);
     }
 
     // Is this position inside the beam? If so, returns the aim direction and an
