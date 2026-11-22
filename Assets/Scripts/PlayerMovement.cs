@@ -305,6 +305,6 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!debugAim || Time.time < nextDebugTime) return;
         nextDebugTime = Time.time + 1f;
-        //Debug.Log("[Flashlight aim] " + message, this);
+        Debug.Log("[Flashlight aim] " + message, this);
     }
 }
