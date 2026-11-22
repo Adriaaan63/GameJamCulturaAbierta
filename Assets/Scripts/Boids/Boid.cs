@@ -7,8 +7,6 @@
 //  - per-boid state machine: Idle / Fleeing / Panic ("STATE MACHINE")
 //  - fear accumulation, flashlight beam + edges, player flee circle
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public enum BoidState { Idle, Fleeing, Panic }
