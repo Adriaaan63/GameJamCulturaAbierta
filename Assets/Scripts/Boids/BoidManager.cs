@@ -9,6 +9,7 @@ public class BoidManager : MonoBehaviour {
     public BoidSettings settings;
     public ComputeShader compute;
     public Transform player;
+    public Flashlight flashlight;
     Boid[] boids;
 
     void Start () {
@@ -16,13 +17,14 @@ public class BoidManager : MonoBehaviour {
         foreach (Boid b in boids) {
             b.Initialize (settings, null);
             b.threat = player;
+            b.flashlight = flashlight;
         }
 
     }
 
     void Update () {
         if (boids != null) {
-
+            if (flashlight != null) flashlight.Refresh();
             int numBoids = boids.Length;
             var boidData = new BoidData[numBoids];
 
