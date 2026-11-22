@@ -14,7 +14,8 @@ public class BoidManager : MonoBehaviour {
     [Tooltip ("The flashlight cone (the component on the aiming pivot).")]
     public Flashlight flashlight;
 
-    Boid[] boids;
+    //Boid[] boids;
+    private List<Boid> boids = new List<Boid>();
     readonly List<Boid> beamBoids = new List<Boid> ();
 
     // Read-only information, handy while tuning. Updated every frame.
@@ -31,28 +32,43 @@ public class BoidManager : MonoBehaviour {
     public float AverageBeamFear { get { return averageBeamFear; } }
 
     void Start () {
-        boids = FindObjectsOfType<Boid> ();
-        foreach (Boid b in boids) {
-            b.Initialize (settings, null);
-            b.threat = player;
-            b.flashlight = flashlight;
+        Boid[] initialBoids = FindObjectsByType<Boid>(FindObjectsSortMode.None);
+        foreach (Boid b in initialBoids)
+        {
+            RegisterBoid(b);
         }
+    }
+    
+    //Metodo para que Spwnaer pueda registrar cada boid al instanciarlo
+    public void RegisterBoid(Boid b)
+    {
+        if (b == null || boids.Contains(b)) return;
+
+        b.Initialize(settings, null);
+        b.threat = player;
+        b.flashlight = flashlight;
+        boids.Add(b);
+        //Debug.Log("Boid registrado. Total en lista: " + boids.Count);
     }
 
     void Update () {
-        if (boids == null || boids.Length == 0) {
-            return;
-        }
-
         // Snapshot the flashlight cone once per frame, before any boid reads it.
         if (flashlight != null) {
             flashlight.Refresh ();
         }
+        
+        //Limpiza de boids destruidos
+        boids.RemoveAll(b => b == null);
 
-        int numBoids = boids.Length;
+        int numBoids = boids.Count;
+
+        // OJO: Un ComputeBuffer de tamaño 0 lanza una excepción en Unity. Si no hay enemigos, salimos.
+        if (numBoids == 0) return;
+
+
         var boidData = new BoidData[numBoids];
 
-        for (int i = 0; i < boids.Length; i++) {
+        for (int i = 0; i < numBoids; i++) {
             boidData[i].position = boids[i].position;
             boidData[i].direction = boids[i].forward;
         }
@@ -61,7 +77,7 @@ public class BoidManager : MonoBehaviour {
         boidBuffer.SetData (boidData);
 
         compute.SetBuffer (0, "boids", boidBuffer);
-        compute.SetInt ("numBoids", boids.Length);
+        compute.SetInt ("numBoids", numBoids);
         compute.SetFloat ("viewRadius", settings.perceptionRadius);
         compute.SetFloat ("avoidRadius", settings.avoidanceRadius);
 
@@ -70,7 +86,7 @@ public class BoidManager : MonoBehaviour {
 
         boidBuffer.GetData (boidData);
 
-        for (int i = 0; i < boids.Length; i++) {
+        for (int i = 0; i < numBoids; i++) {
             boids[i].avgFlockHeading = boidData[i].flockHeading;
             boids[i].centreOfFlockmates = boidData[i].flockCentre;
             boids[i].avgAvoidanceHeading = boidData[i].avoidanceHeading;
@@ -96,7 +112,7 @@ public class BoidManager : MonoBehaviour {
         beamBoids.Clear ();
         float fearSum = 0f;
 
-        for (int i = 0; i < boids.Length; i++) {
+        for (int i = 0; i < boids.Count; i++) {
             Boid b = boids[i];
 
             switch (b.State) {

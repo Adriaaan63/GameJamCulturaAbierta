@@ -18,7 +18,7 @@ MonoBehaviour:
   avoidanceRadius: 5
   maxSteerForce: 3
   alignWeight: 0.49
-  cohesionWeight: 0.42
+  cohesionWeight: 1.52
   seperateWeight: 0.9
   targetWeight: 1
   obstacleMask:
@@ -28,8 +28,8 @@ MonoBehaviour:
   avoidCollisionWeight: 10
   collisionAvoidDst: 5
   fleeRadius: 8
-  fleeWeight: 5
-  fleeSpeedBoost: 0.5
+  fleeWeight: 10.04
+  fleeSpeedBoost: 1.54
   idleSpeed: 1.2
   idleWalkTime: {x: 2, y: 5}
   idleStopTime: {x: 1.5, y: 4}

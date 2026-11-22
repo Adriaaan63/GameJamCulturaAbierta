@@ -119,11 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!108 &302073787 stripped
-Light:
-  m_CorrespondingSourceObject: {fileID: 1145372344357399396, guid: 336d03c335d141a4590d24ae924f6384, type: 3}
-  m_PrefabInstance: {fileID: 1692605408}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &320695074
 GameObject:
   m_ObjectHideFlags: 0
@@ -1061,73 +1056,9 @@ PrefabInstance:
       propertyPath: m_Range
       value: 8.300176
       objectReference: {fileID: 0}
-    - target: {fileID: 1145372344357399396, guid: 336d03c335d141a4590d24ae924f6384, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1145372344357399396, guid: 336d03c335d141a4590d24ae924f6384, type: 3}
-      propertyPath: m_SpotAngle
-      value: 41.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1145372344357399396, guid: 336d03c335d141a4590d24ae924f6384, type: 3}
-      propertyPath: m_InnerSpotAngle
-      value: 29.2032
-      objectReference: {fileID: 0}
-    - target: {fileID: 1197026682887962803, guid: 336d03c335d141a4590d24ae924f6384, type: 3}
-      propertyPath: flashlight
-      value: 
-      objectReference: {fileID: 1939217513}
-    - target: {fileID: 1924083981970327607, guid: 336d03c335d141a4590d24ae924f6384, type: 3}
-      propertyPath: range
-      value: 8.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 1924083981970327607, guid: 336d03c335d141a4590d24ae924f6384, type: 3}
-      propertyPath: active
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1924083981970327607, guid: 336d03c335d141a4590d24ae924f6384, type: 3}
-      propertyPath: halfAngle
-      value: 20.8
-      objectReference: {fileID: 0}
-    - target: {fileID: 1924083981970327607, guid: 336d03c335d141a4590d24ae924f6384, type: 3}
-      propertyPath: spotLight
-      value: 
-      objectReference: {fileID: 302073787}
-    - target: {fileID: 1924083981970327607, guid: 336d03c335d141a4590d24ae924f6384, type: 3}
-      propertyPath: innerAngleRatio
-      value: 0.702
-      objectReference: {fileID: 0}
     - target: {fileID: 2736238368286152552, guid: 336d03c335d141a4590d24ae924f6384, type: 3}
       propertyPath: m_Name
       value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 5307658824321102694, guid: 336d03c335d141a4590d24ae924f6384, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.886
-      objectReference: {fileID: 0}
-    - target: {fileID: 5307658824321102694, guid: 336d03c335d141a4590d24ae924f6384, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.252
-      objectReference: {fileID: 0}
-    - target: {fileID: 5307658824321102694, guid: 336d03c335d141a4590d24ae924f6384, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.99886835
-      objectReference: {fileID: 0}
-    - target: {fileID: 5307658824321102694, guid: 336d03c335d141a4590d24ae924f6384, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.0475619
-      objectReference: {fileID: 0}
-    - target: {fileID: 5307658824321102694, guid: 336d03c335d141a4590d24ae924f6384, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5307658824321102694, guid: 336d03c335d141a4590d24ae924f6384, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5307658824321102694, guid: 336d03c335d141a4590d24ae924f6384, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: -5.452
       objectReference: {fileID: 0}
     - target: {fileID: 6561932917980265852, guid: 336d03c335d141a4590d24ae924f6384, type: 3}
       propertyPath: m_LocalPosition.x

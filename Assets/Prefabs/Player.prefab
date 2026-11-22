@@ -107,6 +107,8 @@ MonoBehaviour:
   rotationSpeed: 15
   stoppingDistance: 0.2
   gravity: -9.81
+  maxStamina: 10
+  sprintMultiplier: 2
   groundLayer:
     serializedVersion: 2
     m_Bits: 16
@@ -159,7 +161,7 @@ Light:
   m_Type: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 10
-  m_Range: 8.300176
+  m_Range: 9.064697
   m_SpotAngle: 41.6
   m_InnerSpotAngle: 29.2032
   m_CookieSize2D: {x: 0.5, y: 0.5}
