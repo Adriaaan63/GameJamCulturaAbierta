@@ -10,53 +10,74 @@ public class BoidManager : MonoBehaviour {
     public ComputeShader compute;
     public Transform player;
     public Flashlight flashlight;
-    Boid[] boids;
 
+    //Boid[] boids;
+    private List<Boid> boids = new List<Boid>();
     void Start () {
-        boids = FindObjectsOfType<Boid> ();
-        foreach (Boid b in boids) {
-            b.Initialize (settings, null);
-            b.threat = player;
-            b.flashlight = flashlight;
+        //Por si existe algun boid en la escena puesto a mano
+        Boid[] initialBoids = FindObjectsByType<Boid>(FindObjectsSortMode.None);
+        foreach (Boid b in initialBoids)
+        {
+            RegisterBoid(b);
         }
-
     }
 
-    void Update () {
-        if (boids != null) {
-            if (flashlight != null) flashlight.Refresh();
-            int numBoids = boids.Length;
-            var boidData = new BoidData[numBoids];
+    //Metodo para que Spwnaer pueda registrar cada boid al instanciarlo
+    public void RegisterBoid(Boid b)
+    {
+        if (b == null || boids.Contains(b)) return;
 
-            for (int i = 0; i < boids.Length; i++) {
-                boidData[i].position = boids[i].position;
-                boidData[i].direction = boids[i].forward;
-            }
+        b.Initialize(settings, null);
+        b.threat = player;
+        b.flashlight = flashlight;
+        boids.Add(b);
+        //Debug.Log("Boid registrado. Total en lista: " + boids.Count);
+    }
 
-            var boidBuffer = new ComputeBuffer (numBoids, BoidData.Size);
-            boidBuffer.SetData (boidData);
+    void Update()
+    {
+        if (flashlight != null) flashlight.Refresh();
 
-            compute.SetBuffer (0, "boids", boidBuffer);
-            compute.SetInt ("numBoids", boids.Length);
-            compute.SetFloat ("viewRadius", settings.perceptionRadius);
-            compute.SetFloat ("avoidRadius", settings.avoidanceRadius);
+        //Limpiza de boids destruidos
+        boids.RemoveAll(b => b == null);
 
-            int threadGroups = Mathf.CeilToInt (numBoids / (float) threadGroupSize);
-            compute.Dispatch (0, threadGroups, 1, 1);
+        int numBoids = boids.Count;
 
-            boidBuffer.GetData (boidData);
+        // OJO: Un ComputeBuffer de tamaño 0 lanza una excepción en Unity. Si no hay enemigos, salimos.
+        if (numBoids == 0) return;
 
-            for (int i = 0; i < boids.Length; i++) {
-                boids[i].avgFlockHeading = boidData[i].flockHeading;
-                boids[i].centreOfFlockmates = boidData[i].flockCentre;
-                boids[i].avgAvoidanceHeading = boidData[i].avoidanceHeading;
-                boids[i].numPerceivedFlockmates = boidData[i].numFlockmates;
+        var boidData = new BoidData[numBoids];
 
-                boids[i].UpdateBoid ();
-            }
-
-            boidBuffer.Release ();
+        for (int i = 0; i < numBoids; i++)
+        {
+            boidData[i].position = boids[i].position;
+            boidData[i].direction = boids[i].forward;
         }
+
+        var boidBuffer = new ComputeBuffer(numBoids, BoidData.Size);
+        boidBuffer.SetData(boidData);
+
+
+        compute.SetBuffer(0, "boids", boidBuffer);
+        compute.SetInt("numBoids", numBoids);
+        compute.SetFloat("viewRadius", settings.perceptionRadius);
+        compute.SetFloat("avoidRadius", settings.avoidanceRadius);
+
+        int threadGroups = Mathf.CeilToInt(numBoids / (float)threadGroupSize);
+        compute.Dispatch(0, threadGroups, 1, 1);
+
+        boidBuffer.GetData(boidData);
+
+        for (int i = 0; i < numBoids; i++)
+        {
+            boids[i].avgFlockHeading = boidData[i].flockHeading;
+            boids[i].centreOfFlockmates = boidData[i].flockCentre;
+            boids[i].avgAvoidanceHeading = boidData[i].avoidanceHeading;
+            boids[i].numPerceivedFlockmates = boidData[i].numFlockmates;
+
+            boids[i].UpdateBoid();
+        }
+        boidBuffer.Release();
     }
 
     public struct BoidData {
