@@ -4,6 +4,8 @@
 //  - movement is locked to a horizontal plane ("PLANE LOCK")
 //  - hard obstacle collision: the real displacement is swept against obstacles and
 //    the boid slides along surfaces instead of going through them ("HARD COLLISION")
+//  - flees from a threat (the player) with panic speed boost ("FLEE")
+//  - herded by a flashlight beam and resisted by its edges ("FLASHLIGHT")
 
 using System.Collections;
 using System.Collections.Generic;
@@ -13,7 +15,9 @@ public class Boid : MonoBehaviour {
 
     BoidSettings settings;
 
+    [Tooltip ("Per-boid random variation of how scared it is of the player (breaks the halo around him).")]
     public float dangerRange = 0.5f;
+
     // State
     [HideInInspector]
     public Vector3 position;
@@ -43,7 +47,12 @@ public class Boid : MonoBehaviour {
     float panic;                         // 0 = calm, 1 = maximum fear (decays slowly)
     float currentMaxSpeed;               // maxSpeed, boosted while panicking
     const float calmDownRate = 0.5f;     // panic lost per second once the threat is gone
-    private float dangerPerception;
+    float dangerPerception;              // this boid's fixed fear offset, set in Awake
+
+    // FLASHLIGHT: set by BoidManager.
+    [HideInInspector]
+    public Flashlight flashlight;
+    Flashlight.EdgeState edgeState;
 
     // PLANE LOCK: the world Y at which this boid lives. Taken from its spawn position.
     float planeY;
@@ -56,7 +65,7 @@ public class Boid : MonoBehaviour {
     void Awake () {
         material = transform.GetComponentInChildren<MeshRenderer> ().material;
         cachedTransform = transform;
-        dangerPerception = Random.Range(-dangerRange, dangerRange);
+        dangerPerception = Random.Range (-dangerRange, dangerRange);
     }
 
     public void Initialize (BoidSettings settings, Transform target) {
@@ -93,7 +102,8 @@ public class Boid : MonoBehaviour {
     public void UpdateBoid () {
         Vector3 acceleration = Vector3.zero;
 
-        // FLEE: how scared am I, and which way is "away"? (horizontal distance only)
+        // FLEE: the circle around the player. How scared am I, and which way is "away"?
+        // (horizontal distance only)
         Vector3 fleeDir = Vector3.zero;
         float urgency = 0f;
         if (threat != null && settings.fleeRadius > 0f) {
@@ -101,13 +111,24 @@ public class Boid : MonoBehaviour {
             away.y = 0f;
             float dist = away.magnitude;
             if (dist < settings.fleeRadius) {
-                urgency = 1f - dist / settings.fleeRadius + dangerPerception;   // 0 at the edge, 1 on top of it
+                // Base: 0 at the radius edge, 1 on top of the player. The per-boid offset makes
+                // each boid keep a slightly different distance, so no halo forms.
+                urgency = 1f - dist / settings.fleeRadius + dangerPerception;
                 fleeDir = dist > 0.0001f ? away / dist : forward;
             }
         }
+
+        // FLASHLIGHT: am I inside the beam? If so I'm herded along its aim direction.
+        Vector3 beamDir = Vector3.zero;
+        float beamIntensity = 0f;
+        if (flashlight != null) {
+            flashlight.TryGetBeam (position, out beamDir, out beamIntensity);
+        }
+
         // Panic rises instantly but fades slowly, so boids don't snap back to normal speed.
-        panic = Mathf.Max (urgency, panic - calmDownRate * Time.deltaTime);
-        currentMaxSpeed = settings.maxSpeed * (Random.Range(-0.2f,0.2f)+1f + settings.fleeSpeedBoost * panic);
+        float fear = Mathf.Max (urgency, beamIntensity);
+        panic = Mathf.Max (fear, panic - calmDownRate * Time.deltaTime);
+        currentMaxSpeed = settings.maxSpeed * (Random.Range (-0.2f, 0.2f) + 1f + settings.fleeSpeedBoost * panic);
 
         if (target != null) {
             Vector3 offsetToTarget = (target.position - position);
@@ -128,9 +149,14 @@ public class Boid : MonoBehaviour {
             acceleration += seperationForce;
         }
 
-        // FLEE: push away from the threat, stronger the closer it is.
+        // FLEE: push away from the player, stronger the closer he is.
         if (urgency > 0f) {
             acceleration += SteerTowards (fleeDir) * settings.fleeWeight * urgency;
+        }
+
+        // FLASHLIGHT: inside the beam, go where the beam points (not sideways out of it).
+        if (beamIntensity > 0f) {
+            acceleration += SteerTowards (beamDir) * flashlight.herdWeight * beamIntensity;
         }
 
         if (IsHeadingForCollision ()) {
@@ -152,18 +178,25 @@ public class Boid : MonoBehaviour {
         speed = Mathf.Clamp (speed, settings.minSpeed, currentMaxSpeed);
         velocity = dir * speed;
 
-        // HARD COLLISION: move through the obstacle-aware routine instead of
-        // simply adding velocity * dt to the position.
         Vector3 startPos = PushOutOfObstacles (cachedTransform.position);
-        bool collided;
-        Vector3 newPos = MoveWithCollisions (startPos, velocity * Time.deltaTime, out collided);
+        Vector3 desiredPos = startPos + velocity * Time.deltaTime;
 
-        if (collided) {
-            // velocity was modified to slide along the surface; refresh the heading.
-            float s = velocity.magnitude;
-            if (s > 0.0001f) {
-                dir = velocity / s;
-            }
+        // FLASHLIGHT: the beam's edges are moving, semi-permeable walls. They may hold the
+        // boid back, or push it forward (the rake). Obstacles still have the last word below.
+        if (flashlight != null) {
+            desiredPos = flashlight.ResolveEdges (startPos, desiredPos, settings.boundsRadius, numPerceivedFlockmates, ref edgeState, ref velocity);
+        }
+
+        // HARD COLLISION: move through the obstacle-aware routine instead of
+        // simply adding the displacement to the position.
+        bool collided;
+        Vector3 newPos = MoveWithCollisions (startPos, desiredPos - startPos, out collided);
+
+        // Velocity may have been changed by the flashlight edges or by sliding along a
+        // surface; refresh the heading.
+        float s = velocity.magnitude;
+        if (s > 0.0001f) {
+            dir = velocity / s;
         }
 
         // PLANE LOCK (3/3): pin the height, in case anything else nudged the transform.

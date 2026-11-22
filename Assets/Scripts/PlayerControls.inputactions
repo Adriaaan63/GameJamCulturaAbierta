@@ -25,7 +25,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "ClickToMove",
+                    "name": "ToggleFlashLight",
                     "type": "Button",
                     "id": "cbd1d4c0-388e-458f-816a-0baed0e2f4ff",
                     "expectedControlType": "",
@@ -163,7 +163,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "ClickToMove",
+                    "action": "ToggleFlashLight",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

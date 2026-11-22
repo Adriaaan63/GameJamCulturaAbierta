@@ -25,6 +25,19 @@ public class PlayerMovement : MonoBehaviour
     [Header("Raycast Settings")]
     [SerializeField] private LayerMask groundLayer;
 
+    // NUEVO ------------------------------------------------------------------------
+    [Header("Flashlight (WASD mode)")]
+    [Tooltip("Child object that carries the Flashlight component. In WASD mode it aims at the mouse, independent of where the player is facing.")]
+    [SerializeField] private Transform flashlightPivot;
+    [Tooltip("Max degrees per second the flashlight can turn. 0 = instant. A cap avoids absurdly violent sweeps on a mouse flick.")]
+    [SerializeField] private float aimTurnSpeed = 720f;
+    private bool warnedNoPivot;
+
+    [Tooltip("Prints once per second what the flashlight aiming is doing, and draws a red line along the flashlight's forward. Turn off when it works.")]
+    [SerializeField] private bool debugAim = true;
+    private float nextDebugTime;
+    // ------------------------------------------------------------------------------
+
     private CharacterController controller;
     private Camera mainCamera;
 
@@ -33,6 +46,8 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 targetWorldPosition;
     private bool hasClickTarget;
     private float verticalVelocity;
+    [SerializeField] private Flashlight flashlight;
+
 
     private void Awake()
     {
@@ -57,7 +72,6 @@ public class PlayerMovement : MonoBehaviour
 
     public void OnClickToMove(InputValue value)
     {
-            Debug.Log("Hola");
         if(value.isPressed && currentMode == MovementMode.ClickToMove)
         {
             if(TryGetMouseWorldPosition(out Vector3 hitPoint))
@@ -80,6 +94,9 @@ public class PlayerMovement : MonoBehaviour
         };
 
         ApplyMovement(moveDirection);
+
+        // NUEVO
+        UpdateFlashlightAim();
     }
 
     // -- Calcular Direccion --
@@ -162,5 +179,94 @@ public class PlayerMovement : MonoBehaviour
             Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
+    }
+
+    // -- NUEVO: apuntado de la linterna --
+
+    // Punto del mundo bajo el cursor, a la altura del pivote de la linterna.
+    // No depende de groundLayer (usa un plano horizontal) ni de que la accion "PointerPosition"
+    // este conectada (lee el raton directamente si existe).
+    private bool TryGetAimPoint(out Vector3 point)
+    {
+        point = Vector3.zero;
+        if (mainCamera == null) return false;
+
+        Vector2 screenPos = Mouse.current != null
+            ? Mouse.current.position.ReadValue()
+            : pointerScreenPos;
+
+        Ray ray = mainCamera.ScreenPointToRay(screenPos);
+        Plane plane = new Plane(Vector3.up, flashlightPivot.position);
+
+        if (plane.Raycast(ray, out float enter))
+        {
+            point = ray.GetPoint(enter);
+            return true;
+        }
+        return false;
+    }
+
+    private void UpdateFlashlightAim()
+    {
+        if (flashlightPivot == null)
+        {
+            if (!warnedNoPivot)
+            {
+                Debug.LogWarning("PlayerMovement: 'Flashlight Pivot' is not assigned, the flashlight will not aim at the mouse.", this);
+                warnedNoPivot = true;
+            }
+            return;
+        }
+
+        if (currentMode != MovementMode.WASD)
+        {
+            // Otros modos: la linterna simplemente mira hacia donde mira el jugador.
+            flashlightPivot.localRotation = Quaternion.identity;
+            DebugAim("Movement mode is " + currentMode + ", not WASD, so the flashlight just follows the player.");
+            return;
+        }
+
+        // WASD: la linterna apunta al raton, el jugador sigue mirando hacia donde camina.
+        if (!TryGetAimPoint(out Vector3 aimPoint))
+        {
+            DebugAim("Could not get a point under the cursor. mainCamera is " + (mainCamera == null ? "NULL (tag your camera as MainCamera)" : "ok") +
+                     ", Mouse.current is " + (Mouse.current == null ? "NULL" : "ok") + ".");
+            return;
+        }
+
+        Vector3 toMouse = aimPoint - flashlightPivot.position;
+        toMouse.y = 0f;
+        if (toMouse.sqrMagnitude < 0.01f)
+        {
+            DebugAim("Cursor is right on top of the pivot, keeping the current direction.");
+            return; // raton encima del jugador: mantener direccion
+        }
+
+        Quaternion targetRotation = Quaternion.LookRotation(toMouse.normalized, Vector3.up);
+
+        flashlightPivot.rotation = aimTurnSpeed <= 0f
+            ? targetRotation
+            : Quaternion.RotateTowards(flashlightPivot.rotation, targetRotation, aimTurnSpeed * Time.deltaTime);
+
+        if (debugAim)
+        {
+            Debug.DrawRay(flashlightPivot.position + Vector3.up * 0.5f, flashlightPivot.forward * 6f, Color.red);
+        }
+        DebugAim("OK. Cursor point = " + aimPoint + ", pivot '" + flashlightPivot.name + "' yaw = " + flashlightPivot.eulerAngles.y.ToString("F0") + " deg.");
+    }
+
+    void OnToggleFlashLight(InputValue value)
+    {
+        if (value.isPressed && flashlight != null)
+        {
+            flashlight.active = !flashlight.active;
+        }
+    }
+    
+    private void DebugAim(string message)
+    {
+        if (!debugAim || Time.time < nextDebugTime) return;
+        nextDebugTime = Time.time + 1f;
+        Debug.Log("[Flashlight aim] " + message, this);
     }
 }
