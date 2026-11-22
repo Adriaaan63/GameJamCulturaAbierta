@@ -112,6 +112,8 @@ MonoBehaviour:
     m_Bits: 16
   flashlightPivot: {fileID: 8107935277548510358}
   aimTurnSpeed: 720
+  debugAim: 1
+  flashlight: {fileID: 1924083981970327607}
 --- !u!1 &7788958127883103392
 GameObject:
   m_ObjectHideFlags: 0
@@ -138,13 +140,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7788958127883103392}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.12186928, y: 0, z: 0, w: 0.9925462}
-  m_LocalPosition: {x: 0, y: -0.482, z: 0.543}
+  m_LocalRotation: {x: -0.0475619, y: -0, z: -0, w: 0.99886835}
+  m_LocalPosition: {x: 0, y: -0.886, z: 0.252}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8107935277548510358}
-  m_LocalEulerAnglesHint: {x: 14, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -5.452, y: 0, z: 0}
 --- !u!108 &1145372344357399396
 Light:
   m_ObjectHideFlags: 0
@@ -157,9 +159,9 @@ Light:
   m_Type: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 10
-  m_Range: 10
-  m_SpotAngle: 30
-  m_InnerSpotAngle: 21.80208
+  m_Range: 8.300176
+  m_SpotAngle: 41.6
+  m_InnerSpotAngle: 29.2032
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
     m_Type: 0
@@ -344,11 +346,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Flashlight
   active: 1
-  range: 12
-  halfAngle: 30
+  range: 8.3
+  halfAngle: 20.8
   herdWeight: 6
   permeability: 0.822
   slipTime: 0.6
   crowdStart: 6
   crowdFull: 15
   leakRate: 2
+  spotLight: {fileID: 1145372344357399396}
+  lightAngleScale: 1
+  innerAngleRatio: 0.702
+  lightGroundY: 0
+  gizmoLift: 0.3
