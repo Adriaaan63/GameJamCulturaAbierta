@@ -31,14 +31,17 @@ public class BoidManager : MonoBehaviour {
     public int BoidsInBeam { get { return boidsInBeamCount; } }
     public float AverageBeamFear { get { return averageBeamFear; } }
 
+    //Boid[] boids;
+    private List<Boid> boids = new List<Boid>();
     void Start () {
+        //Por si existe algun boid en la escena puesto a mano
         Boid[] initialBoids = FindObjectsByType<Boid>(FindObjectsSortMode.None);
         foreach (Boid b in initialBoids)
         {
             RegisterBoid(b);
         }
     }
-    
+
     //Metodo para que Spwnaer pueda registrar cada boid al instanciarlo
     public void RegisterBoid(Boid b)
     {
