@@ -100,6 +100,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5392454599931892171}
   - component: {fileID: 4516407845095957193}
+  - component: {fileID: 1948379073111160794}
   m_Layer: 0
   m_Name: Ninio
   m_TagString: Untagged
@@ -135,12 +136,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b2511f76134a1640bfd46d093e3de76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boid
+  dangerRange: 0.5
   position: {x: 0, y: 0, z: 0}
   forward: {x: 0, y: 0, z: 0}
   avgFlockHeading: {x: 0, y: 0, z: 0}
   avgAvoidanceHeading: {x: 0, y: 0, z: 0}
   centreOfFlockmates: {x: 0, y: 0, z: 0}
   numPerceivedFlockmates: 0
+  threat: {fileID: 0}
+  flashlight: {fileID: 0}
+--- !u!114 &1948379073111160794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6570932116241342418}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 323f265c43d1d7342a7e25809e0f5e0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoidHop
+  visual: {fileID: 2408446811863320147}
+  boid: {fileID: 4516407845095957193}
+  hopHeight: 0.3
+  hopDistance: 2
+  referenceSpeed: 5
+  minSpeedToHop: 0.15
+  settleHopsPerSecond: 4
+  randomVariation: 0.15
+  squashAndStretch: 1
+  stretchAmount: 0.2
+  squashAmount: 0.25
+  squashWindow: 0.15
+  scaleSmoothSpeed: 20
 --- !u!1 &8596706062992390006
 GameObject:
   m_ObjectHideFlags: 0

@@ -347,6 +347,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfca125901b8c784ea95ba2b1aa8b767, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Flashlight
+  boidManager: {fileID: 0}
   active: 1
   range: 8.3
   halfAngle: 20.8
