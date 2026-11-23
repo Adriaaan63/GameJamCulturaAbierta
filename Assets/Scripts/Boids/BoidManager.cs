@@ -8,17 +8,17 @@ public class BoidManager : MonoBehaviour {
 
     public BoidSettings settings;
     public ComputeShader compute;
-
-    [Tooltip ("The player. Boids keep a distance from him.")]
     public Transform player;
-    [Tooltip ("The flashlight cone (the component on the aiming pivot).")]
     public Flashlight flashlight;
 
     //Boid[] boids;
     private List<Boid> boids = new List<Boid>();
-    readonly List<Boid> beamBoids = new List<Boid> ();
 
-    // Read-only information, handy while tuning. Updated every frame.
+    // NUEVO ------------------------------------------------------------------------
+    // Lista reutilizable para decidir el panico sin crear basura cada frame.
+    private readonly List<Boid> beamBoids = new List<Boid>();
+
+    // Informacion de solo lectura, util para calibrar. Se actualiza cada frame.
     [Header ("Debug (read only)")]
     [SerializeField] int boidsIdle;
     [SerializeField] int boidsFleeing;
@@ -30,6 +30,7 @@ public class BoidManager : MonoBehaviour {
 
     public int BoidsInBeam { get { return boidsInBeamCount; } }
     public float AverageBeamFear { get { return averageBeamFear; } }
+    // ------------------------------------------------------------------------------
 
     void Start () {
         //Por si existe algun boid en la escena puesto a mano
@@ -52,63 +53,74 @@ public class BoidManager : MonoBehaviour {
         //Debug.Log("Boid registrado. Total en lista: " + boids.Count);
     }
 
-    void Update () {
-        // Snapshot the flashlight cone once per frame, before any boid reads it.
-        if (flashlight != null) {
-            flashlight.Refresh ();
-        }
-        
+    void Update()
+    {
+        if (flashlight != null) flashlight.Refresh();
+
         //Limpiza de boids destruidos
         boids.RemoveAll(b => b == null);
 
         int numBoids = boids.Count;
 
         // OJO: Un ComputeBuffer de tamaño 0 lanza una excepción en Unity. Si no hay enemigos, salimos.
-        if (numBoids == 0) return;
-
+        if (numBoids == 0)
+        {
+            ResetStats(); // NUEVO: que los contadores no se queden congelados
+            return;
+        }
 
         var boidData = new BoidData[numBoids];
 
-        for (int i = 0; i < numBoids; i++) {
+        for (int i = 0; i < numBoids; i++)
+        {
             boidData[i].position = boids[i].position;
             boidData[i].direction = boids[i].forward;
         }
 
-        var boidBuffer = new ComputeBuffer (numBoids, BoidData.Size);
-        boidBuffer.SetData (boidData);
+        var boidBuffer = new ComputeBuffer(numBoids, BoidData.Size);
+        boidBuffer.SetData(boidData);
 
-        compute.SetBuffer (0, "boids", boidBuffer);
-        compute.SetInt ("numBoids", numBoids);
-        compute.SetFloat ("viewRadius", settings.perceptionRadius);
-        compute.SetFloat ("avoidRadius", settings.avoidanceRadius);
 
-        int threadGroups = Mathf.CeilToInt (numBoids / (float) threadGroupSize);
-        compute.Dispatch (0, threadGroups, 1, 1);
+        compute.SetBuffer(0, "boids", boidBuffer);
+        compute.SetInt("numBoids", numBoids);
+        compute.SetFloat("viewRadius", settings.perceptionRadius);
+        compute.SetFloat("avoidRadius", settings.avoidanceRadius);
 
-        boidBuffer.GetData (boidData);
+        int threadGroups = Mathf.CeilToInt(numBoids / (float)threadGroupSize);
+        compute.Dispatch(0, threadGroups, 1, 1);
 
-        for (int i = 0; i < numBoids; i++) {
+        boidBuffer.GetData(boidData);
+
+        for (int i = 0; i < numBoids; i++)
+        {
             boids[i].avgFlockHeading = boidData[i].flockHeading;
             boids[i].centreOfFlockmates = boidData[i].flockCentre;
             boids[i].avgAvoidanceHeading = boidData[i].avoidanceHeading;
             boids[i].numPerceivedFlockmates = boidData[i].numFlockmates;
 
-            boids[i].UpdateBoid ();
+            boids[i].UpdateBoid();
         }
+        boidBuffer.Release();
 
-        boidBuffer.Release ();
-
-        // Panic is a collective decision (it depends on the average of several boids),
-        // so it is taken here and not inside each Boid.
-        UpdateStatsAndPanic ();
+        // NUEVO: el panico es una decision colectiva (depende de la media de varios boids),
+        // asi que se toma aqui y no dentro de cada Boid.
+        UpdateStatsAndPanic();
     }
 
-    void UpdateStatsAndPanic () {
+    // NUEVO ------------------------------------------------------------------------
+
+    void ResetStats ()
+    {
         boidsIdle = 0;
         boidsFleeing = 0;
         boidsPanicking = 0;
         boidsInBeamCount = 0;
         averageBeamFear = 0f;
+    }
+
+    void UpdateStatsAndPanic ()
+    {
+        ResetStats ();
 
         beamBoids.Clear ();
         float fearSum = 0f;
@@ -144,7 +156,7 @@ public class BoidManager : MonoBehaviour {
             return;
         }
 
-        // Too much pressure: every boid in the beam bolts.
+        // Demasiada presion: todos los boids del haz salen corriendo.
         Vector3 sharedDirection = RandomFlatDirection ();
         for (int i = 0; i < beamBoids.Count; i++) {
             Vector3 direction = settings.panicSharedDirection ? sharedDirection : RandomFlatDirection ();
@@ -153,10 +165,12 @@ public class BoidManager : MonoBehaviour {
         }
     }
 
-    static Vector3 RandomFlatDirection () {
+    static Vector3 RandomFlatDirection ()
+    {
         float angle = Random.Range (0f, Mathf.PI * 2f);
         return new Vector3 (Mathf.Sin (angle), 0f, Mathf.Cos (angle));
     }
+    // ------------------------------------------------------------------------------
 
     public struct BoidData {
         public Vector3 position;

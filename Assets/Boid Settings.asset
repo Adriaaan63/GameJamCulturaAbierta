@@ -38,13 +38,13 @@ MonoBehaviour:
   fearFallRate: 0.25
   calmDownTime: 3
   panicFearThreshold: 0.7
-  panicMinBoidsInBeam: 5
+  panicMinBoidsInBeam: 0
   panicDuration: 4
   panicDurationVariation: 0.25
   panicSpeed: 9
   panicSteerWeight: 5
   panicImmunityTime: 3
   panicSharedDirection: 0
-  debugFearColour: 1
+  debugFearColour: 0
   calmColour: {r: 1, g: 1, b: 1, a: 1}
   terrifiedColour: {r: 1, g: 0, b: 0, a: 1}

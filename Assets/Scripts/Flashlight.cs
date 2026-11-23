@@ -12,6 +12,9 @@ using UnityEngine;
 /// </summary>
 public class Flashlight : MonoBehaviour {
 
+    [Header("Dependencies")]
+    [SerializeField] private BoidManager boidManager;
+    
     [Header ("Beam")]
     public bool active = true;
     public float range = 12f;
@@ -222,6 +225,7 @@ public class Flashlight : MonoBehaviour {
 
     void Update () {
         SyncLight ();
+        SyncLightColour ();
     }
 
     void OnValidate () {
@@ -244,6 +248,16 @@ public class Flashlight : MonoBehaviour {
         // horizontally from a light that sits h above the floor, we need sqrt(range^2 + h^2).
         float h = Mathf.Max (0f, spotLight.transform.position.y - lightGroundY);
         spotLight.range = Mathf.Sqrt (range * range + h * h);
+    }
+    
+    void SyncLightColour () {
+        if (spotLight == null || boidManager == null || boidManager.settings == null) {
+            return;
+        }
+        spotLight.color = Color.Lerp (
+            boidManager.settings.calmColour,
+            boidManager.settings.terrifiedColour,
+            boidManager.AverageBeamFear);
     }
 
     void OnDrawGizmos () {

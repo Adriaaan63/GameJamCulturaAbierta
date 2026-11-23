@@ -338,8 +338,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6163961042557096824, guid: a03ef23ad766eab4298a173a648ad957, type: 3}
       propertyPath: spawnCount
-      value: 1000
+      value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 6163961042557096824, guid: a03ef23ad766eab4298a173a648ad957, type: 3}
+      propertyPath: boidManager
+      value: 
+      objectReference: {fileID: 1312714518}
     - target: {fileID: 6163961042557096824, guid: a03ef23ad766eab4298a173a648ad957, type: 3}
       propertyPath: showSpawnRegion
       value: 1
@@ -815,6 +819,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1312714518 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4464413573638174119, guid: 38f72fe1a37ad3041b4e99dddc04b6ff, type: 3}
+  m_PrefabInstance: {fileID: 734762521}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a3a741586ef4cf499f2306f41ddf294, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoidManager
 --- !u!1 &1342861360
 GameObject:
   m_ObjectHideFlags: 0
@@ -1056,6 +1071,10 @@ PrefabInstance:
       propertyPath: m_Range
       value: 8.300176
       objectReference: {fileID: 0}
+    - target: {fileID: 1924083981970327607, guid: 336d03c335d141a4590d24ae924f6384, type: 3}
+      propertyPath: boidManager
+      value: 
+      objectReference: {fileID: 1312714518}
     - target: {fileID: 2736238368286152552, guid: 336d03c335d141a4590d24ae924f6384, type: 3}
       propertyPath: m_Name
       value: Player
