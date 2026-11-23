@@ -151,38 +151,60 @@ public class BoidManager : MonoBehaviour {
         computeBuffer.GetData(boidDataBuffer, 0, 0, numBoids);
 
         //Actualizamos movimiento y comporbamos succionadores
-        for(int i = numBoids -1; i >= 0; i--)
+        // En BoidManager.Update():
+        for (int i = numBoids - 1; i >= 0; i--)
         {
             Boid b = boids[i];
-            b.avgFlockHeading = boidDataBuffer[i].flockHeading;
-            b.centreOfFlockmates = boidDataBuffer[i].avoidanceHeading;
-            b.numPerceivedFlockmates = boidDataBuffer[i].numFlockmates;
 
-            b.UpdateBoid();
-
-            if(CheckSuctionZones(b))
+            // 1. Evaluamos captura y atracción ANTES de UpdateBoid()
+            if (ProcessSuctionZones(b))
             {
                 DespawnAtIndex(i);
+                continue; // Ya fue capturado, no hace falta moverlo este frame
             }
-        }
 
+            // 2. Asignamos datos del Compute Shader (corregido)
+            b.avgFlockHeading = boidDataBuffer[i].flockHeading;
+            b.centreOfFlockmates = boidDataBuffer[i].flockCentre;
+            b.avgAvoidanceHeading = boidDataBuffer[i].avoidanceHeading;
+            b.numPerceivedFlockmates = boidDataBuffer[i].numFlockmates;
+
+            // 3. Ejecutamos el movimiento (ya incluye la aceleración del aspirador)
+            b.UpdateBoid();
+        }
         UpdateStatsAndPanic();
     }
 
-    private bool CheckSuctionZones(Boid b)
+    private bool ProcessSuctionZones(Boid b)
     {
-        for(int z = 0; z < suctionZones.Count; z++)
+        Vector3 bPos = b.position;
+
+        for (int z = 0; z < suctionZones.Count; z++)
         {
             BoidSuctionZone zone = suctionZones[z];
-            Vector3 delta = b.position - zone.transform.position;
-            delta.y = 0f;
+            Vector3 zPos = zone.transform.position;
 
-            float r = zone.Radius;
+            // Vector desde el boid HACIA el centro del aspirador
+            float dx = zPos.x - bPos.x;
+            float dz = zPos.z - bPos.z;
+            float distSqr = dx * dx + dz * dz;
 
-            if(delta.sqrMagnitude <= r * r)
+            float captureR = zone.Radius;
+            if (distSqr <= captureR * captureR)
             {
                 zone.OnBoidCaptured(b);
-                return true;
+                return true; // Capturado
+            }
+
+            float suctionR = zone.SuctionRadius;
+            if (distSqr <= suctionR * suctionR && distSqr > 0.0001f)
+            {
+                float dist = Mathf.Sqrt(distSqr);
+                Vector3 dirToCenter = new Vector3(dx / dist, 0f, dz / dist);
+
+                // Opcional: que tire más fuerte cuanto más cerca esté del centro (falloff inverso)
+                float pullFactor = 1f - (dist / suctionR);
+                b.AddAcceleration(dirToCenter * (zone.SuctionStrength * pullFactor));
             }
         }
 

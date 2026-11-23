@@ -1,14 +1,18 @@
 using Unity.VisualScripting;
 using UnityEngine;
 
-[RequireComponent(typeof(Collider))]
+//[RequireComponent(typeof(Collider))]
 public class BoidSuctionZone : MonoBehaviour
 {
     [SerializeField] private BoidManager boidManager;
     [SerializeField] private float radius = 2.5f;
+    [SerializeField] private float suctionRadius = 2.5f;
+    [SerializeField] private float suctionStrength = 15f; // Aceleración hacia el centro
     [SerializeField] private int capturedCount = 0;
 
     public float Radius => radius;
+    public float SuctionRadius => suctionRadius;
+    public float SuctionStrength => suctionStrength;
     public float CapturedCount => capturedCount;
 
     private void Awake()
@@ -46,5 +50,8 @@ public class BoidSuctionZone : MonoBehaviour
     {
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, radius);
+
+        Gizmos.color = Color.coral;
+        Gizmos.DrawWireSphere(transform.position, suctionRadius);
     }
 }

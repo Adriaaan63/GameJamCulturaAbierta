@@ -34,6 +34,8 @@ public class Boid : MonoBehaviour {
     public Vector3 centreOfFlockmates;
     [HideInInspector]
     public int numPerceivedFlockmates;
+    private Vector3 externalAcceleration;
+
 
     // Cached
     Material material;
@@ -253,6 +255,10 @@ public class Boid : MonoBehaviour {
         }
 
         // ---- 4. MOVE --------------------------------------------------------------------
+
+        // Sumamos las aceleraciones externas (como la aspiradora) y reseteamos el acumulador para el siguiente frame
+        acceleration += externalAcceleration;
+        externalAcceleration = Vector3.zero;
 
         // PLANE LOCK (1/3): no force may push the boid up or down.
         acceleration.y = 0f;
@@ -522,6 +528,11 @@ public class Boid : MonoBehaviour {
     Vector3 SteerTowards (Vector3 vector) {
         Vector3 v = vector.normalized * currentMaxSpeed - velocity;
         return Vector3.ClampMagnitude (v, settings.maxSteerForce);
+    }
+
+    public void AddAcceleration(Vector3 force)
+    {
+        externalAcceleration += force;
     }
 
 }
