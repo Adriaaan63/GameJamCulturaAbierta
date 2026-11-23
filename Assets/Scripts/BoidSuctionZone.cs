@@ -2,7 +2,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
-public class Furgoneta : MonoBehaviour
+public class BoidSuctionZone : MonoBehaviour
 {
     [SerializeField] private BoidManager boidManager;
     [SerializeField] private float radius = 2.5f;

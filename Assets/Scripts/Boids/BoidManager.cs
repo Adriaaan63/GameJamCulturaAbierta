@@ -18,8 +18,8 @@ public class BoidManager : MonoBehaviour {
     public Flashlight flashlight;
 
     private List<Boid> boids = new List<Boid>();
-    private Stack<Boid> inactivedPool= new Stack<Boid>();
-    private List<Furgoneta> suctionZones = new List<Furgoneta>();
+    private Stack<Boid> inactivePool= new Stack<Boid>();
+    private List<BoidSuctionZone> suctionZones = new List<BoidSuctionZone>();
 
     //Buffer reutilizables para evitar GC Alloc cada frame
     private BoidData[] boidDataBuffer;
@@ -55,65 +55,92 @@ public class BoidManager : MonoBehaviour {
             b.threat = player;
             b.flashlight = flashlight;
             b.gameObject.SetActive(false);
-            inactivedPool.Push(b);
+            inactivePool.Push(b);
         }
     }
 
-    public void RegisterSuctionZone(Furgoneta zone)
+    public void RegisterSuctionZone(BoidSuctionZone zone)
     {
-
-    }
-
-    void Start () {
-        //Por si existe algun boid en la escena puesto a mano
-        Boid[] initialBoids = FindObjectsByType<Boid>(FindObjectsSortMode.None);
-        foreach (Boid b in initialBoids)
+        if(zone != null && !suctionZones.Contains(zone))
         {
-            RegisterBoid(b);
+            suctionZones.Add(zone);
         }
     }
+
+    public void UnregisterSuctionZone(BoidSuctionZone zone)
+    {
+        suctionZones.Remove(zone);
+    }
+
+    public Boid SpawnFromPool(Vector3 position, Vector3 forward, Color colour)
+    {
+        if (inactivePool.Count == 0) return null; //Pool llena
+
+        Boid b = inactivePool.Pop();
+        b.transform.position = position;
+        b.transform.forward = forward;
+        b.SetColour(colour);
+        b.gameObject.SetActive(true);
+        b.Initialize(settings, null);
+
+        boids.Add(b);
+        return b;
+    }
+
+    private void DespawnAtIndex(int index)
+    {
+        Boid b = boids[index];
+        b.gameObject.SetActive(false);
+        inactivePool.Push(b);
+
+        //Swap&Pop en List<Boid>: O(1) sin desplazar elementos
+        int lastIndex = boids.Count - 1;
+        boids[index] = boids[lastIndex];
+        boids.RemoveAt(lastIndex);
+    }
+
+    //void Start () {
+    //    //Por si existe algun boid en la escena puesto a mano
+    //    Boid[] initialBoids = FindObjectsByType<Boid>(FindObjectsSortMode.None);
+    //    foreach (Boid b in initialBoids)
+    //    {
+    //        RegisterBoid(b);
+    //    }
+    //}
 
     //Metodo para que Spwnaer pueda registrar cada boid al instanciarlo
-    public void RegisterBoid(Boid b)
-    {
-        if (b == null || boids.Contains(b)) return;
+    //public void RegisterBoid(Boid b)
+    //{
+    //    if (b == null || boids.Contains(b)) return;
 
-        b.Initialize(settings, null);
-        b.threat = player;
-        b.flashlight = flashlight;
-        boids.Add(b);
-        //Debug.Log("Boid registrado. Total en lista: " + boids.Count);
-    }
+    //    b.Initialize(settings, null);
+    //    b.threat = player;
+    //    b.flashlight = flashlight;
+    //    boids.Add(b);
+    //    //Debug.Log("Boid registrado. Total en lista: " + boids.Count);
+    //}
 
     void Update()
     {
         if (flashlight != null) flashlight.Refresh();
 
-        //Limpiza de boids destruidos
-        boids.RemoveAll(b => b == null);
-
         int numBoids = boids.Count;
-
-        // OJO: Un ComputeBuffer de tamaño 0 lanza una excepción en Unity. Si no hay enemigos, salimos.
-        if (numBoids == 0)
+        if(numBoids == 0)
         {
-            ResetStats(); // NUEVO: que los contadores no se queden congelados
+            ResetStats();
             return;
         }
 
-        var boidData = new BoidData[numBoids];
-
-        for (int i = 0; i < numBoids; i++)
+        //Empaquetamos los datos activos
+        for(int i = 0; i < numBoids; i++)
         {
-            boidData[i].position = boids[i].position;
-            boidData[i].direction = boids[i].forward;
+            boidDataBuffer[i].position = boids[i].position;
+            boidDataBuffer[i].direction = boids[i].forward;
         }
 
-        var boidBuffer = new ComputeBuffer(numBoids, BoidData.Size);
-        boidBuffer.SetData(boidData);
+        computeBuffer.SetData(boidDataBuffer, 0, 0, numBoids);
 
-
-        compute.SetBuffer(0, "boids", boidBuffer);
+        compute.SetBuffer(0, "boids", computeBuffer);
         compute.SetInt("numBoids", numBoids);
         compute.SetFloat("viewRadius", settings.perceptionRadius);
         compute.SetFloat("avoidRadius", settings.avoidanceRadius);
@@ -121,23 +148,56 @@ public class BoidManager : MonoBehaviour {
         int threadGroups = Mathf.CeilToInt(numBoids / (float)threadGroupSize);
         compute.Dispatch(0, threadGroups, 1, 1);
 
-        boidBuffer.GetData(boidData);
+        computeBuffer.GetData(boidDataBuffer, 0, 0, numBoids);
 
-        for (int i = 0; i < numBoids; i++)
+        //Actualizamos movimiento y comporbamos succionadores
+        for(int i = numBoids -1; i >= 0; i--)
         {
-            boids[i].avgFlockHeading = boidData[i].flockHeading;
-            boids[i].centreOfFlockmates = boidData[i].flockCentre;
-            boids[i].avgAvoidanceHeading = boidData[i].avoidanceHeading;
-            boids[i].numPerceivedFlockmates = boidData[i].numFlockmates;
+            Boid b = boids[i];
+            b.avgFlockHeading = boidDataBuffer[i].flockHeading;
+            b.centreOfFlockmates = boidDataBuffer[i].avoidanceHeading;
+            b.numPerceivedFlockmates = boidDataBuffer[i].numFlockmates;
 
-            boids[i].UpdateBoid();
+            b.UpdateBoid();
+
+            if(CheckSuctionZones(b))
+            {
+                DespawnAtIndex(i);
+            }
         }
-        boidBuffer.Release();
 
-        // NUEVO: el panico es una decision colectiva (depende de la media de varios boids),
-        // asi que se toma aqui y no dentro de cada Boid.
         UpdateStatsAndPanic();
     }
+
+    private bool CheckSuctionZones(Boid b)
+    {
+        for(int z = 0; z < suctionZones.Count; z++)
+        {
+            BoidSuctionZone zone = suctionZones[z];
+            Vector3 delta = b.position - zone.transform.position;
+            delta.y = 0f;
+
+            float r = zone.Radius;
+
+            if(delta.sqrMagnitude <= r * r)
+            {
+                zone.OnBoidCaptured(b);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void OnDestroy()
+    {
+        if(computeBuffer != null)
+        {
+            computeBuffer.Release();
+            computeBuffer = null;
+        }
+    }
+
 
     // NUEVO ------------------------------------------------------------------------
 
@@ -152,7 +212,7 @@ public class BoidManager : MonoBehaviour {
 
     void UpdateStatsAndPanic ()
     {
-        ResetStats ();
+        ResetStats();
 
         beamBoids.Clear ();
         float fearSum = 0f;

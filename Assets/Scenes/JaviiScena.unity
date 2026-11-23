@@ -912,6 +912,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43b2c648988daa64cb9b5858a977a0d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  boidManager: {fileID: 0}
+  radius: 2.5
+  capturedCount: 0
 --- !u!135 &1379976415
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1169,6 +1172,10 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 491932494}
+    - target: {fileID: 4464413573638174119, guid: 38f72fe1a37ad3041b4e99dddc04b6ff, type: 3}
+      propertyPath: boidPrefab
+      value: 
+      objectReference: {fileID: 4516407845095957193, guid: 874162bed487ec742b3022a7053ad617, type: 3}
     - target: {fileID: 4464413573638174119, guid: 38f72fe1a37ad3041b4e99dddc04b6ff, type: 3}
       propertyPath: flashlight
       value: 
