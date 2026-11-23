@@ -6,15 +6,25 @@ public class BoidManager : MonoBehaviour {
 
     const int threadGroupSize = 1024;
 
+    [Header("Boid Settings")]
     public BoidSettings settings;
     public ComputeShader compute;
+    public Boid boidPrefab;
+    public int poolSize = 1000;
+
+    [Header("Scene References")]
+
     public Transform player;
     public Flashlight flashlight;
 
-    //Boid[] boids;
     private List<Boid> boids = new List<Boid>();
+    private Stack<Boid> inactivedPool= new Stack<Boid>();
+    private List<Furgoneta> suctionZones = new List<Furgoneta>();
 
-    // NUEVO ------------------------------------------------------------------------
+    //Buffer reutilizables para evitar GC Alloc cada frame
+    private BoidData[] boidDataBuffer;
+    private ComputeBuffer computeBuffer;
+
     // Lista reutilizable para decidir el panico sin crear basura cada frame.
     private readonly List<Boid> beamBoids = new List<Boid>();
 
@@ -28,9 +38,31 @@ public class BoidManager : MonoBehaviour {
     [Tooltip ("Average fear of the boids inside the beam that can still panic. This is the number compared with the threshold.")]
     [SerializeField] float averageBeamFear;
 
-    public int BoidsInBeam { get { return boidsInBeamCount; } }
-    public float AverageBeamFear { get { return averageBeamFear; } }
+    public int BoidsInBeam => boidsInBeamCount;
+    public float AverageBeamFear => averageBeamFear;
     // ------------------------------------------------------------------------------
+
+    void Awake()
+    {
+        //Pre-alojamos buffers y la pool de golpe al arrancar
+        boidDataBuffer = new BoidData[poolSize];
+        computeBuffer = new ComputeBuffer(poolSize, BoidData.Size);
+
+        for(int i=0; i < poolSize; i++)
+        {
+            Boid b = Instantiate(boidPrefab, transform);
+            b.Initialize(settings, null);
+            b.threat = player;
+            b.flashlight = flashlight;
+            b.gameObject.SetActive(false);
+            inactivedPool.Push(b);
+        }
+    }
+
+    public void RegisterSuctionZone(Furgoneta zone)
+    {
+
+    }
 
     void Start () {
         //Por si existe algun boid en la escena puesto a mano

@@ -33,6 +33,7 @@ public class Spawner : MonoBehaviour {
     public bool parentToSpawner = false;
     [Tooltip("Off (as before): the first wave comes after 'spawnRate' seconds. On: a wave also appears right at the start.")]
     public bool spawnOnStart = false;
+    [SerializeField] private bool OneSpawn;
 
     private int spawnedTotal;
     private bool warnedPlacement;
@@ -63,15 +64,18 @@ public class Spawner : MonoBehaviour {
 
     private void Update()
     {
-        if (!isSpawning) return;
-
-        timeRemaining -= Time.deltaTime;
-
-        if (timeRemaining <= 0f)
+        if(!OneSpawn)
         {
-            timeRemaining = spawnRate;
-            //isSpawning = false;
-            Spawn();
+            if (!isSpawning) return;
+
+            timeRemaining -= Time.deltaTime;
+
+            if (timeRemaining <= 0f)
+            {
+                timeRemaining = spawnRate;
+                //isSpawning = false;
+                Spawn();
+            }
         }
     }
     private void Spawn()
