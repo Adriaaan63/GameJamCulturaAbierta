@@ -99,27 +99,6 @@ public class BoidManager : MonoBehaviour {
         boids.RemoveAt(lastIndex);
     }
 
-    //void Start () {
-    //    //Por si existe algun boid en la escena puesto a mano
-    //    Boid[] initialBoids = FindObjectsByType<Boid>(FindObjectsSortMode.None);
-    //    foreach (Boid b in initialBoids)
-    //    {
-    //        RegisterBoid(b);
-    //    }
-    //}
-
-    //Metodo para que Spwnaer pueda registrar cada boid al instanciarlo
-    //public void RegisterBoid(Boid b)
-    //{
-    //    if (b == null || boids.Contains(b)) return;
-
-    //    b.Initialize(settings, null);
-    //    b.threat = player;
-    //    b.flashlight = flashlight;
-    //    boids.Add(b);
-    //    //Debug.Log("Boid registrado. Total en lista: " + boids.Count);
-    //}
-
     void Update()
     {
         if (flashlight != null) flashlight.Refresh();
@@ -190,19 +169,19 @@ public class BoidManager : MonoBehaviour {
             float distSqr = dx * dx + dz * dz;
 
             float captureR = zone.Radius;
-            if (distSqr <= captureR * captureR)
+            if (distSqr <= captureR * captureR && zone.HasSlot)
             {
                 zone.OnBoidCaptured(b);
-                return true; // Capturado
+                return true; // Capturado y ocupa 1 hueco
             }
 
+            // Si está llena o aún no ha llegado al centro, lo sigue atrayendo para que ronde cerca
             float suctionR = zone.SuctionRadius;
             if (distSqr <= suctionR * suctionR && distSqr > 0.0001f)
             {
                 float dist = Mathf.Sqrt(distSqr);
                 Vector3 dirToCenter = new Vector3(dx / dist, 0f, dz / dist);
 
-                // Opcional: que tire más fuerte cuanto más cerca esté del centro (falloff inverso)
                 float pullFactor = 1f - (dist / suctionR);
                 b.AddAcceleration(dirToCenter * (zone.SuctionStrength * pullFactor));
             }
