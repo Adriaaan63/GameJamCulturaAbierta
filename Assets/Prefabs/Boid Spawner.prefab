@@ -44,8 +44,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1de8eb6472289e940a32bf57fc9a8f4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Spawner
-  prefab: {fileID: 4516407845095957193, guid: 874162bed487ec742b3022a7053ad617, type: 3}
+  boidManager: {fileID: 0}
   spawnRadius: 20
-  spawnCount: 10000
+  spawnCount: 10
+  spawnRate: 5
   colour: {r: 0.227451, g: 0.47450984, b: 0.73333335, a: 0}
-  showSpawnRegion: 2
+  showSpawnRegion: 1
+  spawnHeight: 0
+  uniformDisc: 0
+  maxPlacementAttempts: 10
+  parentToSpawner: 0
+  spawnOnStart: 0
+  OneSpawn: 0
