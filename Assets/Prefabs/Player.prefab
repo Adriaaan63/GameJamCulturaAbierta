@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 405879522965186637}
   - component: {fileID: 5613411892845154493}
   - component: {fileID: 1197026682887962803}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -127,7 +127,7 @@ GameObject:
   - component: {fileID: 5307658824321102694}
   - component: {fileID: 1145372344357399396}
   - component: {fileID: 2730181760024834369}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Spot Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -255,7 +255,7 @@ GameObject:
   - component: {fileID: 8986384450698489570}
   - component: {fileID: 2289964224798588566}
   - component: {fileID: 1924083981970327607}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
