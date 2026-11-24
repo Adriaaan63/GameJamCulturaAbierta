@@ -337,17 +337,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6163961042557096824, guid: a03ef23ad766eab4298a173a648ad957, type: 3}
-      propertyPath: spawnCount
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 6163961042557096824, guid: a03ef23ad766eab4298a173a648ad957, type: 3}
       propertyPath: boidManager
       value: 
       objectReference: {fileID: 1312714518}
-    - target: {fileID: 6163961042557096824, guid: a03ef23ad766eab4298a173a648ad957, type: 3}
-      propertyPath: showSpawnRegion
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 8563462010382874470, guid: a03ef23ad766eab4298a173a648ad957, type: 3}
       propertyPath: m_Name
       value: Boid Spawner
