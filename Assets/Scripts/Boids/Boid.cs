@@ -82,7 +82,7 @@ public class Boid : MonoBehaviour {
     static readonly Collider[] overlapBuffer = new Collider[16];
 
     void Awake () {
-        material = transform.GetComponentInChildren<MeshRenderer> ().material;
+        material = transform.GetComponentInChildren<SkinnedMeshRenderer> ().material;
         if (material != null) {
             baseColour = material.color;
         }
