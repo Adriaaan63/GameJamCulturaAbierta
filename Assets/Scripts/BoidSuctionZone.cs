@@ -30,7 +30,7 @@ public class BoidSuctionZone : MonoBehaviour
     private void Awake()
     {
         if (boidManager == null)
-            boidManager = FindFirstObjectByType<BoidManager>();
+            boidManager = FindAnyObjectByType<BoidManager>();
     }
 
     private void OnEnable()
@@ -54,10 +54,13 @@ public class BoidSuctionZone : MonoBehaviour
         }
     }
 
+    public static event System.Action<BoidSuctionZone> OnAnyBoidCaptured;
+
     public void OnBoidCaptured(Boid boid)
     {
         capturedCount++;
         currentLoad += 1f;
+        OnAnyBoidCaptured?.Invoke(this);
         // Aquí metemos partículas, sonidos, etc.
     }
 
