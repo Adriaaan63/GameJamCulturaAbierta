@@ -133,7 +133,8 @@ public class GameManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (levels.Count > 0 && scene.name == gameSceneName) {
+        // if (levels.Count > 0 && scene.name == gameSceneName) {
+        if (levels.Count > 0) {
             BeginLevel();
         } else
         {
