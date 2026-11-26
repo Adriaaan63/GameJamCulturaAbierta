@@ -5,19 +5,27 @@ using UnityEngine.UI;
 
 public class HUDController : MonoBehaviour
 {
-    [Header("Socre Reference")]
+    [Header("Score Reference")]
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private string prefix = "Puntos: ";
-    
+
     [Header("UI Reference")]
     [SerializeField] private Image arcFilledImage;
-    [SerializeField] private RectTransform moonHandle;
-    [SerializeField] private RectTransform arcCenter;
-    
-    [Header("Arc Geometry")]
-    [Tooltip("Radio en píxeles desde el centro hasta la trayectoria de la luna.")]
-    [SerializeField] private float radius = 130f;
+    [SerializeField] private RectTransform ejeLuna;
 
+    [Header("Arc Fill Calibration")]
+    [Tooltip("Valor de Fill Amount donde empieza visualmente el arco (izquierda).")]
+    [Range(0f, 1f)][SerializeField] private float startFill = 0f;
+    [Tooltip("Valor de Fill Amount donde termina visualmente el arco (derecha).")]
+    [Range(0f, 1f)][SerializeField] private float endFill = 1f;
+
+    [Header("Moon Pivot Rotation (Z)")]
+    [Tooltip("Ángulo Z de EjeLuna cuando la luna está en el extremo izquierdo.")]
+    [SerializeField] private float startAngleZ = 0f;
+    [Tooltip("Ángulo Z de EjeLuna cuando la luna llega al extremo derecho.")]
+    [SerializeField] private float endAngleZ = -90f;
+
+    [Header("Preview / Debug")]
     [Range(0f, 1f)]
     [SerializeField] private float progress = 0f; // 0 = empieza la noche, 1 = amanece
 
@@ -52,23 +60,13 @@ public class HUDController : MonoBehaviour
 
         if (arcFilledImage != null)
         {
-            arcFilledImage.fillAmount = progress;
+            arcFilledImage.fillAmount = Mathf.Lerp(startFill, endFill, progress);
         }
 
-        if (moonHandle != null)
+        if (ejeLuna != null)
         {
-            //En radial 180 de izquierda a derecha:
-            //progress = 0 -> 180 grados
-            //progress = 0.5 -> 90 grados
-            //progress = 1 -> 0 grados
-
-            float angleRad = Mathf.Lerp(Mathf.PI, 0f, progress);
-
-            Vector2 centerPos = arcCenter != null ? arcCenter.anchoredPosition : Vector2.zero;
-            float x = centerPos.x + Mathf.Cos(angleRad) * radius;
-            float y = centerPos.y + Mathf.Sin(angleRad) * radius;
-
-            moonHandle.anchoredPosition = new Vector2(x, y);
+            float currentAngleZ = Mathf.Lerp(startAngleZ, endAngleZ, progress);
+            ejeLuna.localEulerAngles = new Vector3(0f, 0f, currentAngleZ);
         }
     }
 
