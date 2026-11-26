@@ -67,6 +67,7 @@ public class GameManager : MonoBehaviour
 
     // Para que el HUD lea el estado actual al aparecer.
     public int Captured => captured;
+    public bool IsPlaying => playing;
     public int MinBoidsToCapture => Level.MinBoidsToCapture;
     public float NightProgress => 1f - timeRemaining / Level.TimeLimit;
 
@@ -148,8 +149,7 @@ public class GameManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // if (levels.Count > 0 && scene.name == gameSceneName) {
-        if (levels.Count > 0) {
+        if (levels.Count > 0 && scene.name == gameSceneName) {
             BeginLevel();
         } else
         {

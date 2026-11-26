@@ -37,6 +37,7 @@ public class HUDController : MonoBehaviour
     {
         // Preparamos la plantilla una sola vez al inicio (ej. "Puntos: {0}")
         formatTemplate = prefix + "{0}";
+        if (GameManager.Instance != null) GameManager.Instance.HUD = this;
     }
 
     public void UpdateScoreText(int newScore)
@@ -73,5 +74,11 @@ public class HUDController : MonoBehaviour
     private void OnValidate()
     {
         SetProgress(progress);
+    }
+    
+    void OnDestroy()
+    {
+        if (GameManager.Instance != null && GameManager.Instance.HUD == this)
+            GameManager.Instance.HUD = null;
     }
 }
