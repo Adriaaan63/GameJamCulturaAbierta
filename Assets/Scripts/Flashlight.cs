@@ -99,7 +99,7 @@ public class Flashlight : MonoBehaviour {
         wasActive = active;
         hasState = true;
         
-        Debug.Log(BoidsInBeam);
+        // Debug.Log(BoidsInBeam);
     }
 
     // Is this position inside the beam? If so, returns the aim direction and an
