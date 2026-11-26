@@ -13,16 +13,12 @@ public class GameManager : MonoBehaviour
     [System.Serializable]
     public class LevelData
     {
-        [SerializeField] private string sceneName = "Game";
-        [Tooltip("Boids que hay que capturar para ganar el nivel.")]
-        [SerializeField, Min(1)] private int boidsToCapture = 20;
-        [Tooltip("Segundos. 0 = sin límite.")]
-        // seteé un mínimo de 0, es medio innecesario, pero para prevenir valores negativos o errores de tipeo
-        // o me puse muy QA?
-        [SerializeField, Min(0)] private float timeLimit = 120f;
-
-        public string SceneName => sceneName;
-        public int BoidsToCapture => boidsToCapture;
+        [Tooltip("mínimo de boids que hay que capturar para pasar el nivel.")]
+        [SerializeField, Min(1)] private int minBoidsToCapture = 20;
+        
+        [Tooltip("Duración de la noche en segundos. Al acabar se comprueba si se capturó el mínimo.")]
+        [SerializeField, Min(1)] private float timeLimit = 120f;
+        public int MinBoidsToCapture => minBoidsToCapture;
         public float TimeLimit => timeLimit;
     }
 
@@ -39,9 +35,13 @@ public class GameManager : MonoBehaviour
     }
 
     [Header("Niveles")]
-    [Tooltip("Lista de niveles en el juego.")]
+    [Tooltip("Número de noches que contiene el juego. Por ejemplo, si es 5, habrá 5 niveles.")]
+    [SerializeField, Min(1)] private int numberOfNights = 5;
+    [Tooltip("Escena que se carga para jugar cada noche.")]
+    [SerializeField] private string gameSceneName = "Game";
+    [Tooltip("Configuración de cada noche. Se ajusta sola a 'Number Of Nights'.")]
     [SerializeField] private List<LevelData> levels = new List<LevelData>();
-    [Tooltip("Después del último nivel vuelve al primero. Si no, carga el menú.")]
+    [Tooltip("Después de la última noche vuelve a la primera. Si no, carga el menú.")]
     [SerializeField] private bool loopLevels = true;
     [SerializeField] private string mainMenuSceneName = "MainMenu";
 
@@ -63,6 +63,14 @@ public class GameManager : MonoBehaviour
 
     private LevelData Level => levels[currentLevel];
 
+    // Se ejecuta en el editor al cambiar un valor del Inspector:
+    // deja exactamente una entrada en 'levels' por cada noche.
+    private void OnValidate()
+    {
+        while (levels.Count < numberOfNights) levels.Add(new LevelData());
+        if (levels.Count > numberOfNights) levels.RemoveRange(numberOfNights, levels.Count - numberOfNights);
+    }
+
     private void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
@@ -72,10 +80,6 @@ public class GameManager : MonoBehaviour
 
     private void OnEnable()
     {
-        // No sé si les parece bien esto, si quieren lo podemos cambiar,
-        // pasa que de esta forma el Start() sólo se ejecuta una vez, por lo que al cambiar de nivel
-        // el GM sigue siendo el mismo objeto y no vuelve a pasar por Start()
-        // a mí me parece bien, no sé uds.
         SceneManager.sceneLoaded += OnSceneLoaded;
         BoidSuctionZone.OnAnyBoidCaptured += OnBoidCaptured;
     }
@@ -87,20 +91,17 @@ public class GameManager : MonoBehaviour
         BoidSuctionZone.OnAnyBoidCaptured -= OnBoidCaptured;
     }
 
-    private void Start()
-    {
-        int levelIndex = levels.FindIndex(l => l.SceneName == SceneManager.GetActiveScene().name);
-        if (levelIndex >= 0) { currentLevel = levelIndex; BeginLevel(); }
-    }
-
     private void Update()
     {
-        if (!playing || Level.TimeLimit <= 0f) return;
+        if (!playing) return;
 
         timeRemaining = Mathf.Max(0f, timeRemaining - Time.deltaTime);
         onTimeChanged?.Invoke(timeRemaining);
 
-        if (timeRemaining <= 0f) EndLevel(onLose);
+        if (timeRemaining <= 0f)
+        {
+            EndLevel(captured >= Level.MinBoidsToCapture ? onWin : onLose);
+        }
     }
 
     public void StartGame() => LoadLevel(0);
@@ -116,12 +117,12 @@ public class GameManager : MonoBehaviour
         StopAllCoroutines();
         playing = false;
         currentLevel = index;
-        SceneManager.LoadScene(Level.SceneName);
+        SceneManager.LoadScene(gameSceneName);
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (levels.Count > 0 && scene.name == Level.SceneName) {
+        if (levels.Count > 0 && scene.name == gameSceneName) {
             BeginLevel();
         } else
         {
@@ -134,7 +135,7 @@ public class GameManager : MonoBehaviour
         captured = 0;
         timeRemaining = Level.TimeLimit;
         playing = true;
-        onCaptureProgress?.Invoke(captured, Level.BoidsToCapture);
+        onCaptureProgress?.Invoke(captured, Level.MinBoidsToCapture);
         onTimeChanged?.Invoke(timeRemaining);
     }
 
@@ -143,9 +144,7 @@ public class GameManager : MonoBehaviour
         if (!playing) return;
 
         captured++;
-        onCaptureProgress?.Invoke(captured, Level.BoidsToCapture);
-
-        if (captured >= Level.BoidsToCapture) EndLevel(onWin);
+        onCaptureProgress?.Invoke(captured, Level.MinBoidsToCapture);
     }
 
     private void EndLevel(EndSettings end)
@@ -163,7 +162,7 @@ public class GameManager : MonoBehaviour
         {
             case EndAction.NextLevel:
                 int next = currentLevel + 1;
-                if (next < levels.Count) LoadLevel(next);
+                if (next < numberOfNights) LoadLevel(next);
                 else if (loopLevels) LoadLevel(0);
                 else GoToMainMenu();
                 break;
