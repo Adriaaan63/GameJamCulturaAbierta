@@ -53,7 +53,8 @@ public class GameManager : MonoBehaviour
     [Header("UI")]
     public UnityEvent<int, int> onCaptureProgress;
     public UnityEvent<float> onNightProgress;
-
+    //HUD
+    public HUDController HUD;
     // TODO: Quitar luego.
     // Como no hay HUD aún, dejé esto para poder ver el progreso y el tiempo restante en el Inspector.
     [Header("Debug (solo lectura)")]
@@ -69,8 +70,7 @@ public class GameManager : MonoBehaviour
     public int MinBoidsToCapture => Level.MinBoidsToCapture;
     public float NightProgress => 1f - timeRemaining / Level.TimeLimit;
 
-    //HUD
-    public HUDController HUD;
+    
     
     //Combos
     [SerializeField] private int comboCount = 0;
