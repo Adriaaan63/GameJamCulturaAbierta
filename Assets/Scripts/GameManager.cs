@@ -49,11 +49,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] private EndSettings onWin = new EndSettings { action = EndAction.NextLevel };
     [SerializeField] private EndSettings onLose = new EndSettings { action = EndAction.RestartLevel };
 
-    // Necesitamos el HUD para mostrar progreso y tiempo restante, pero lo dejo igual
+    // El HUD se suscribe a estos eventos por código (ver HUDController)
     [Header("UI")]
     public UnityEvent<int, int> onCaptureProgress;
-    public UnityEvent<float> onTimeChanged;
+    public UnityEvent<float> onNightProgress;
 
+    // TODO: Quitar luego.
     // Como no hay HUD aún, dejé esto para poder ver el progreso y el tiempo restante en el Inspector.
     [Header("Debug (solo lectura)")]
     [SerializeField] private int currentLevel;
@@ -62,6 +63,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] private bool playing;
 
     private LevelData Level => levels[currentLevel];
+
+    // Para que el HUD lea el estado actual al aparecer.
+    public int Captured => captured;
+    public int MinBoidsToCapture => Level.MinBoidsToCapture;
+    public float NightProgress => 1f - timeRemaining / Level.TimeLimit;
+
+    public HUDController HUD;
 
     // Se ejecuta en el editor al cambiar un valor del Inspector:
     // deja exactamente una entrada en 'levels' por cada noche.
@@ -96,12 +104,15 @@ public class GameManager : MonoBehaviour
         if (!playing) return;
 
         timeRemaining = Mathf.Max(0f, timeRemaining - Time.deltaTime);
-        onTimeChanged?.Invoke(timeRemaining);
+        onNightProgress?.Invoke(NightProgress);
 
         if (timeRemaining <= 0f)
         {
             EndLevel(captured >= Level.MinBoidsToCapture ? onWin : onLose);
         }
+
+        HUD.SetProgress(NightProgress);
+
     }
 
     public void StartGame() => LoadLevel(0);
@@ -136,7 +147,7 @@ public class GameManager : MonoBehaviour
         timeRemaining = Level.TimeLimit;
         playing = true;
         onCaptureProgress?.Invoke(captured, Level.MinBoidsToCapture);
-        onTimeChanged?.Invoke(timeRemaining);
+        onNightProgress?.Invoke(0f);
     }
 
     private void OnBoidCaptured(BoidSuctionZone zone)
@@ -145,6 +156,7 @@ public class GameManager : MonoBehaviour
 
         captured++;
         onCaptureProgress?.Invoke(captured, Level.MinBoidsToCapture);
+        HUD?.UpdateScoreText(captured);
     }
 
     private void EndLevel(EndSettings end)
