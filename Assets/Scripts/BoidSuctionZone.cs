@@ -17,16 +17,22 @@ public class BoidSuctionZone : MonoBehaviour
 
     [Header("Debug")]
     [SerializeField] private int capturedCount = 0;
+    [SerializeField] private int processedCount = 0;
     [SerializeField] private float currentLoad = 0f; // Cuánto está llena ahora mismo (0 .. maxCapacity)
-
+    [SerializeField] private int TotalScore = 0;
+    
     public float Radius => radius;
     public float SuctionRadius => suctionRadius;
     public float SuctionStrength => suctionStrength;
     public int CapturedCount => capturedCount;
+    public int ProcessedCount => processedCount;
 
     // Hay hueco si al meter 1 boid nuevo no superamos la capacidad máxima
     public bool HasSlot => (currentLoad + 1f) <= maxCapacity;
 
+
+    private int checkIntScore = 0;
+    
     private void Awake()
     {
         if (boidManager == null)
@@ -50,8 +56,22 @@ public class BoidSuctionZone : MonoBehaviour
         // Se ejecuta UNA sola vez por frame: va vaciando la carga poco a poco
         if (currentLoad > 0f)
         {
+            // int currentInteger = Mathf.CeilToInt(currentLoad);
             currentLoad = Mathf.Max(0f, currentLoad - processRate * Time.deltaTime);
+            
+            if (checkIntScore-1 >= Mathf.CeilToInt(currentLoad))
+            {
+                checkIntScore--;
+                OnBoidProcessed();
+            }
         }
+    }
+
+    public static event System.Action<BoidSuctionZone> OnAnyBoidProcessed;
+    public void OnBoidProcessed()
+    {
+        TotalScore++;
+        OnAnyBoidProcessed?.Invoke(this);
     }
 
     public static event System.Action<BoidSuctionZone> OnAnyBoidCaptured;
@@ -59,6 +79,7 @@ public class BoidSuctionZone : MonoBehaviour
     public void OnBoidCaptured(Boid boid)
     {
         capturedCount++;
+        checkIntScore++;
         currentLoad += 1f;
         OnAnyBoidCaptured?.Invoke(this);
         // Aquí metemos partículas, sonidos, etc.
