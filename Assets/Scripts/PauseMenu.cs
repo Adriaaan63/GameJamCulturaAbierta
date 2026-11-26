@@ -8,7 +8,6 @@ public class PruebaPausaRapida : MonoBehaviour
 {
     [Header("Contenedores UI")]
     public GameObject pauseMenu;
-    public GameObject pausePanel;
     public RawImage blurBackground;
 
     [Header("Oscurecido")]
@@ -28,7 +27,12 @@ public class PruebaPausaRapida : MonoBehaviour
     {
         if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
         {
-            if (isPaused) Reanudar(); else Pausar();
+            bool inst = GameManager.Instance != null;
+            bool play = inst && GameManager.Instance.IsPlaying;
+            Debug.Log($"ESC | instance={inst} | playing={play} | pauseMenu={(pauseMenu != null)}");
+
+            if (isPaused) Reanudar();
+            else if (play) Pausar();
         }
     }
 
@@ -53,7 +57,6 @@ public class PruebaPausaRapida : MonoBehaviour
 
         pauseMenu.SetActive(true);
         blurBackground.gameObject.SetActive(true);
-        pausePanel.SetActive(true);
 
         Time.timeScale = 0f;
     }
@@ -76,6 +79,6 @@ public class PruebaPausaRapida : MonoBehaviour
         Time.timeScale = 1f;
         pauseMenu.SetActive(false);
         if (captura != null) { Destroy(captura); captura = null; }
-        SceneManager.LoadScene(0);
+        GameManager.Instance.GoToMainMenu();
     }
 }   

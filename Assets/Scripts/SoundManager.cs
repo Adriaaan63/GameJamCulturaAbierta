@@ -76,16 +76,19 @@ public class SoundManager : MonoBehaviour
     public void SetMasterVolume(float value)
     {
         AudioListener.volume = Mathf.Clamp01(value);
+        Debug.Log(AudioListener.volume+"master");
     }
 
     public void SetMusicVolume(float value)
     {
         if (musicSource != null) musicSource.volume = Mathf.Clamp01(value);
+        Debug.Log(musicSource.volume+"music");
     }
 
     public void SetSFXVolume(float value)
     {
         if (sfxSource != null) sfxSource.volume = Mathf.Clamp01(value);
+        Debug.Log(sfxSource.volume+"sfx");
     }
 
     
