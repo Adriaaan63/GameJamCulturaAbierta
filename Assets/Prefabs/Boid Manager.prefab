@@ -46,7 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BoidManager
   settings: {fileID: 11400000, guid: 72cfb379790cf954f9604743b263eb9a, type: 2}
   compute: {fileID: 7200000, guid: 866844b814546c1469970bd326e30838, type: 3}
-  boidPrefab: {fileID: 4516407845095957193, guid: 874162bed487ec742b3022a7053ad617, type: 3}
+  boidPrefab: {fileID: 6499442270610493641, guid: cd9e0850863304648bae55351a884ad6, type: 3}
   poolSize: 1000
   player: {fileID: 0}
   flashlight: {fileID: 0}

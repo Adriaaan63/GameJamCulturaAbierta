@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PruebaPausaRapida : MonoBehaviour
 {
@@ -67,4 +68,14 @@ public class PruebaPausaRapida : MonoBehaviour
     }
 
     void OnDestroy() { if (captura != null) Destroy(captura); }
-}
+
+
+    public void VolverAlMenu()
+    {
+        isPaused = false;
+        Time.timeScale = 1f;
+        pauseMenu.SetActive(false);
+        if (captura != null) { Destroy(captura); captura = null; }
+        SceneManager.LoadScene(0);
+    }
+}   
