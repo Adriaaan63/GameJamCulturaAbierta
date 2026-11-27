@@ -53,7 +53,8 @@ public class GameManager : MonoBehaviour
     [Header("UI")]
     public UnityEvent<int, int> onCaptureProgress;
     public UnityEvent<float> onNightProgress;
-
+    //HUD
+    public HUDController HUD;
     // TODO: Quitar luego.
     // Como no hay HUD aún, dejé esto para poder ver el progreso y el tiempo restante en el Inspector.
     [Header("Debug (solo lectura)")]
@@ -70,8 +71,15 @@ public class GameManager : MonoBehaviour
     public int MinBoidsToCapture => Level.MinBoidsToCapture;
     public float NightProgress => 1f - timeRemaining / Level.TimeLimit;
 
-    public HUDController HUD;
-
+    
+    
+    //Combos
+    [SerializeField] private int comboCount = 0;
+    [SerializeField] private float comboTimer = 3f;
+    [SerializeField] private float comboWindow = 2;
+    [SerializeField] private float comboMultiplier = 2;
+    
+    
     // Se ejecuta en el editor al cambiar un valor del Inspector:
     // deja exactamente una entrada en 'levels' por cada noche.
     private void OnValidate()
@@ -91,6 +99,7 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
         BoidSuctionZone.OnAnyBoidCaptured += OnBoidCaptured;
+        BoidSuctionZone.OnAnyBoidProcessed += OnBoidProcessed;
     }
 
     // si cambiamos la forma del onEnable, también habría que ajustar esto para que se desuscriba correctamente.
@@ -113,7 +122,13 @@ public class GameManager : MonoBehaviour
         }
 
         HUD.SetProgress(NightProgress);
-
+        
+        
+        comboTimer = Mathf.Max(0f, comboTimer - Time.deltaTime);
+        if (comboTimer <= 0)
+        {
+            comboCount = 0;
+        }
     }
 
     public void StartGame() => LoadLevel(0);
@@ -155,7 +170,20 @@ public class GameManager : MonoBehaviour
     {
         if (!playing) return;
 
-        captured++;
+        comboTimer = comboWindow;
+        comboCount++;
+    }
+
+    private void OnBoidProcessed(BoidSuctionZone zone)
+    {
+        if (!playing) return;
+        
+        if (comboTimer > 0)
+        {
+            captured += Mathf.CeilToInt(comboCount * comboMultiplier);
+            Debug.Log(captured);
+        }
+        
         onCaptureProgress?.Invoke(captured, Level.MinBoidsToCapture);
         HUD?.UpdateScoreText(captured);
     }
