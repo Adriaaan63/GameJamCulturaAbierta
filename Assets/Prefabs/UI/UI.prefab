@@ -282,7 +282,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 259, y: -7}
+  m_AnchoredPosition: {x: 259, y: -26}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &3498429927764318929
@@ -657,7 +657,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 373, y: 61}
+  m_AnchoredPosition: {x: 373, y: 31}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6435186684792414933
@@ -688,7 +688,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Camara
+  m_text: 'Flashlight
 
     Movement'
   m_isRightToLeft: 0
@@ -797,7 +797,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 154.3999, y: 435.46347}
+  m_AnchoredPosition: {x: 154.3999, y: 423}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &7017453835161583751
@@ -828,7 +828,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Designers:'
+  m_text: Capture as many kids as you can!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 83d96d3e7ed2ecc4797ef1b75efc2f1d, type: 2}
   m_sharedMaterial: {fileID: 8989589042340480195, guid: 83d96d3e7ed2ecc4797ef1b75efc2f1d, type: 2}
@@ -861,7 +861,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 17
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -1485,7 +1485,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 259, y: 62}
+  m_AnchoredPosition: {x: 259, y: 31.999996}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &6952445190651911707
@@ -1661,7 +1661,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: -192, y: 54.889824}
+  m_AnchoredPosition: {x: -192, y: 35}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7973467796053603988
@@ -1951,7 +1951,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 373, y: -80}
+  m_AnchoredPosition: {x: 373, y: -78}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1874214920067101599
@@ -3575,7 +3575,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 119, y: -131}
+  m_AnchoredPosition: {x: 122, y: -131}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8510254328843203494
@@ -3712,7 +3712,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -10.5, y: -58.10002}
+  m_AnchoredPosition: {x: -10.5, y: -131}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &6597405051939713996
@@ -3743,7 +3743,12 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Adrian Castellanos Orme\xF1o\nIvan Panisello Rodenas\nGustavo Ruiz Gonzalez "
+  m_text: 'Use your flashlight to scare them and guide them to the cart before the
+    night is over.
+
+
+    But be careful! If you scare them too much, they''ll run
+    away. '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 83d96d3e7ed2ecc4797ef1b75efc2f1d, type: 2}
   m_sharedMaterial: {fileID: 8989589042340480195, guid: 83d96d3e7ed2ecc4797ef1b75efc2f1d, type: 2}
@@ -4167,7 +4172,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 373, y: -6}
+  m_AnchoredPosition: {x: 373, y: -25.000011}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5159125131844325630
@@ -4198,7 +4203,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: flashlight
+  m_text: 'Active
+
+    Flashlight'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 83d96d3e7ed2ecc4797ef1b75efc2f1d, type: 2}
   m_sharedMaterial: {fileID: 8989589042340480195, guid: 83d96d3e7ed2ecc4797ef1b75efc2f1d, type: 2}
@@ -4619,11 +4626,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 232731173009643658, guid: 6b2ca771ea50e0b4c88ad39181100f79, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 419033813970543494, guid: 6b2ca771ea50e0b4c88ad39181100f79, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -54.200012
+      objectReference: {fileID: 0}
+    - target: {fileID: 1359775739880898999, guid: 6b2ca771ea50e0b4c88ad39181100f79, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -70
       objectReference: {fileID: 0}
     - target: {fileID: 1956608002129016428, guid: 6b2ca771ea50e0b4c88ad39181100f79, type: 3}
       propertyPath: m_AnchorMax.x
@@ -4635,11 +4646,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2171800292524569745, guid: 6b2ca771ea50e0b4c88ad39181100f79, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 128.88985
+      value: 128
       objectReference: {fileID: 0}
     - target: {fileID: 3002656379026024972, guid: 6b2ca771ea50e0b4c88ad39181100f79, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -19.11015
+      value: -58
       objectReference: {fileID: 0}
     - target: {fileID: 5272893424336387436, guid: 6b2ca771ea50e0b4c88ad39181100f79, type: 3}
       propertyPath: m_Pivot.x
