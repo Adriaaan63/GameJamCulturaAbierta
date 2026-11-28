@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 019d61f6bfc2943d3b9ae3dda362f3a2, type: 3}
-  m_Name: MaxCapacity2
+  m_Name: ProcessRate3
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
-  displayName: 'Donde cabe uno, caben dos II '
-  description: "Los resultados del nuevo sistema de embarque han sido excelentes.
-    La direcci\xF3n ha decidido eliminar las pausas entre pasajeros. El concepto
-    de espacio personal queda pendiente de revisi\xF3n.\n\nEfecto: Aumenta nuevamente
-    la cantidad de ni\xF1os absorbidos por segundo. \r\n"
+  displayName: Donde cabe uno, caben dos III
+  description: "Ante el aumento de la demanda, nuestro departamento de log\xEDstica
+    ha desarrollado un revolucionario sistema de embarque simult\xE1neo. Las reclamaciones
+    pueden depositarse en el buz\xF3n situado dentro del carruaje. \n\nEfecto: Aumenta
+    considerablemente la cantidad de ni\xF1os absorbidos por segundo. \r\n"
   icon: {fileID: 0}
   effects:
   - stat: 3
-    value: 2
+    value: 2.5
   unlockedAtStart: 0
   prerequisites:
   - {fileID: 11400000, guid: be3372f8fee0aa441ad800c8204a68db, type: 2}

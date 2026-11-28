@@ -12,12 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 019d61f6bfc2943d3b9ae3dda362f3a2, type: 3}
   m_Name: ProcessRate2
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
-  displayName: Burundanga Express
-  description: 
+  displayName: 'Donde cabe uno, caben dos II '
+  description: "Los resultados del nuevo sistema de embarque han sido excelentes.
+    La direcci\xF3n ha decidido eliminar las pausas entre pasajeros. El concepto
+    de espacio personal queda pendiente de revisi\xF3n.\n\nEfecto: Aumenta nuevamente
+    la cantidad de ni\xF1os absorbidos por segundo. \r\n"
   icon: {fileID: 0}
   effects:
-  - stat: 2
-    value: 3
+  - stat: 3
+    value: 2
   unlockedAtStart: 0
   prerequisites:
-  - {fileID: 11400000, guid: 2fb51c46118fe654d9a62e4aad77d2ce, type: 2}
+  - {fileID: 11400000, guid: be3372f8fee0aa441ad800c8204a68db, type: 2}

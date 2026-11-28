@@ -12,12 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 019d61f6bfc2943d3b9ae3dda362f3a2, type: 3}
   m_Name: ProcessRate1
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
-  displayName: "\xA1De uno en uno!"
-  description: 
+  displayName: 'Donde cabe uno, caben dos I '
+  description: "Tras detectar peque\xF1as demoras en el servicio de recogida, la
+    direcci\xF3n ha decidido agilizar el embarque. Se ruega a los pasajeros que no
+    se entretengan y pasen al fondo. \n\nEfecto: Aumenta nuevamente la cantidad de
+    ni\xF1os absorbidos por segundo. \r\n"
   icon: {fileID: 0}
   effects:
-  - stat: 2
-    value: 2
+  - stat: 3
+    value: 1.5
   unlockedAtStart: 0
   prerequisites:
   - {fileID: 11400000, guid: fcbeb591010157243b57cd05253f3233, type: 2}

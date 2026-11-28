@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 019d61f6bfc2943d3b9ae3dda362f3a2, type: 3}
-  m_Name: MaxCapacity4
+  m_Name: ProcessRate4
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
   displayName: Donde cabe uno, caben dos IV
   description: "Tras a\xF1os de investigaci\xF3n, la direcci\xF3n ha llegado a una
