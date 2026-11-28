@@ -15,7 +15,8 @@ MonoBehaviour:
   displayName: Piel de gallina
   description: "Nuestro departamento de Recursos Humanos ha detectado que algunos
     de nuestros peque\xF1os colaboradores presentan s\xEDntomas de nerviosismo ante
-    la presencia del Sacamantecas. "
+    la presencia del Sacamantecas. \n\nEfecto: Los ni\xF1os tardan m\xE1s en alcanzar
+    el p\xE1nico y huir. \r\n"
   icon: {fileID: 0}
   effects:
   - stat: 4

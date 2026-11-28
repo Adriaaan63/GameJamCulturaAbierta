@@ -16,7 +16,8 @@ MonoBehaviour:
   description: "Con el objetivo de garantizar un servicio de recogida infantil eficiente,
     la direcci\xF3n ha puesto a disposici\xF3n de sus empleados una moderna flota
     de carruajes. Rogamos a los pasajeros que mantengan los brazos y las piernas
-    dentro del veh\xEDculo. "
+    dentro del veh\xEDculo.\n\nEfecto: Desbloquea el uso del carruaje para entregar
+    ni\xF1os. \r\n "
   icon: {fileID: 0}
   effects: []
   unlockedAtStart: 1

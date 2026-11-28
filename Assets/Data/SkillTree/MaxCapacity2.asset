@@ -15,7 +15,8 @@ MonoBehaviour:
   displayName: 'Donde cabe uno, caben dos II '
   description: "Los resultados del nuevo sistema de embarque han sido excelentes.
     La direcci\xF3n ha decidido eliminar las pausas entre pasajeros. El concepto
-    de espacio personal queda pendiente de revisi\xF3n."
+    de espacio personal queda pendiente de revisi\xF3n.\n\nEfecto: Aumenta nuevamente
+    la cantidad de ni\xF1os absorbidos por segundo. \r\n"
   icon: {fileID: 0}
   effects:
   - stat: 3

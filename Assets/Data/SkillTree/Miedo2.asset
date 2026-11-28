@@ -15,7 +15,8 @@ MonoBehaviour:
   displayName: Trauma infantil
   description: "Tras numerosas quejas, la direcci\xF3n ha decidido implementar un
     programa de exposici\xF3n prolongada al estr\xE9s. Los resultados son prometedores,
-    aunque los participantes se niegan a repetir. "
+    aunque los participantes se niegan a repetir. \n\nEfecto: Los ni\xF1os tardan
+    a\xFAn m\xE1s en alcanzar el p\xE1nico y huir. \r\n"
   icon: {fileID: 0}
   effects:
   - stat: 4

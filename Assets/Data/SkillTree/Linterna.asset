@@ -15,7 +15,7 @@ MonoBehaviour:
   displayName: "H\xE1gase la luz "
   description: "Todo negocio de \xE9xito necesita una visi\xF3n clara de futuro.
     Por ello, la direcci\xF3n ha aprobado la adquisici\xF3n de una linterna de \xFAltima
-    generaci\xF3n. "
+    generaci\xF3n. \n\nEfecto: Desbloquea el uso de la linterna. \r\n"
   icon: {fileID: 0}
   effects: []
   unlockedAtStart: 1

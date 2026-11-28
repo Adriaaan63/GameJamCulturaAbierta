@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
   displayName: Bien clarito
   description: "Los primeros resultados han sido prometedores, pero todav\xEDa quedan
-    demasiados rincones oscuros. "
+    demasiados rincones oscuros.\n\nEfecto: Aumenta moderadamente el tama\xF1o del
+    cono de luz.\r\n "
   icon: {fileID: 0}
   effects:
   - stat: 0

@@ -15,7 +15,8 @@ MonoBehaviour:
   displayName: "Faro de la perdici\xF3n"
   description: "Ante el \xE9xito de la campa\xF1a, la direcci\xF3n ha decidido eliminar
     definitivamente las zonas de sombra. Si puede verse desde el espacio, tambi\xE9n
-    puede verse desde el carruaje. "
+    puede verse desde el carruaje. \n\nEfecto: Aumenta considerablemente el tama\xF1o
+    del cono de luz. \r\n"
   icon: {fileID: 0}
   effects:
   - stat: 0

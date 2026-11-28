@@ -15,7 +15,7 @@ MonoBehaviour:
   displayName: "Iluminaci\xF3n estrat\xE9gica "
   description: "Tras una exhaustiva evaluaci\xF3n de riesgos, la direcci\xF3n ha
     concluido que resulta m\xE1s f\xE1cil encontrar ni\xF1os cuando se les puede
-    ver. "
+    ver. \n\nEfecto: Aumenta ligeramente el tama\xF1o del cono de luz.\r\n"
   icon: {fileID: 0}
   effects:
   - stat: 0

@@ -15,7 +15,8 @@ MonoBehaviour:
   displayName: 'Donde cabe uno, caben dos I '
   description: "Tras detectar peque\xF1as demoras en el servicio de recogida, la
     direcci\xF3n ha decidido agilizar el embarque. Se ruega a los pasajeros que no
-    se entretengan y pasen al fondo. "
+    se entretengan y pasen al fondo. \n\nEfecto: Aumenta nuevamente la cantidad de
+    ni\xF1os absorbidos por segundo. \r\n"
   icon: {fileID: 0}
   effects:
   - stat: 3

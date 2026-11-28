@@ -15,7 +15,8 @@ MonoBehaviour:
   displayName: Donde cabe uno, caben dos III
   description: "Ante el aumento de la demanda, nuestro departamento de log\xEDstica
     ha desarrollado un revolucionario sistema de embarque simult\xE1neo. Las reclamaciones
-    pueden depositarse en el buz\xF3n situado dentro del carruaje. "
+    pueden depositarse en el buz\xF3n situado dentro del carruaje. \n\nEfecto: Aumenta
+    considerablemente la cantidad de ni\xF1os absorbidos por segundo. \r\n"
   icon: {fileID: 0}
   effects:
   - stat: 3

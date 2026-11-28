@@ -16,7 +16,8 @@ MonoBehaviour:
   description: "Tras a\xF1os de investigaci\xF3n, la direcci\xF3n ha llegado a una
     conclusi\xF3n hist\xF3rica: los l\xEDmites de capacidad son una construcci\xF3n
     social. El departamento de prevenci\xF3n de riesgos laborales ha sido disuelto
-    por falta de productividad. "
+    por falta de productividad.\n\nEfecto: Aumenta al m\xE1ximo la cantidad de ni\xF1os
+    que el carruaje absorbe por segundo.  \r\n"
   icon: {fileID: 0}
   effects:
   - stat: 3
