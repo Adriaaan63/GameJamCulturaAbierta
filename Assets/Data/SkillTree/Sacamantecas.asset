@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Sacamantecas
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
   displayName: Sacamantecas
-  description: 
+  description: ajjdsnjfbjsbfjsbf
   icon: {fileID: 0}
+  effects: []
   unlockedAtStart: 1
   prerequisites: []

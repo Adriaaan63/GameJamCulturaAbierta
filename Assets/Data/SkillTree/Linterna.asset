@@ -15,5 +15,6 @@ MonoBehaviour:
   displayName: Linterna
   description: 
   icon: {fileID: 0}
+  effects: []
   unlockedAtStart: 1
   prerequisites: []
