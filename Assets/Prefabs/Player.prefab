@@ -653,6 +653,7 @@ MonoBehaviour:
   boidManager: {fileID: 0}
   active: 1
   range: 8.3
+  baseHalfAngle: 30
   halfAngle: 20.8
   herdWeight: 6
   permeability: 0.822

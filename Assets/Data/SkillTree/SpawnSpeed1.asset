@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: SpawnSpeed1
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
   displayName: Fertilidad Asistida
-  description: 
+  description: "Con el fin de garantizar un suministro constante de materia prima,
+    la direcci\xF3n ha puesto en marcha un ambicioso programa de fomento de la natalidad.
+    Porque sin ni\xF1os no hay futuro. Ni jab\xF3n.\n\nEfecto: Desbloquea la generaci\xF3n
+    de ni\xF1os durante la noche. \r\n"
   icon: {fileID: 0}
   effects:
   - stat: 1

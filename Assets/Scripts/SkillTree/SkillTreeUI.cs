@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public enum SkillState
 {
@@ -15,7 +16,10 @@ public class SkillTreeUI : MonoBehaviour
 {
     [Header("UI References")]
     [SerializeField] private GameObject panel;
-    [SerializeField] private TextMeshProUGUI detailText;
+    [SerializeField] private Image skillIconImage;
+    [SerializeField] private TextMeshProUGUI skillNameText;
+    [SerializeField] private TextMeshProUGUI skillStatusAndReqText;
+    [SerializeField] private TextMeshProUGUI skillDescriptionText;
 
     [Header("Appearance")]
     [SerializeField] private Color unlockedColor = new(0.95f, 0.7f, 0.2f);
@@ -132,21 +136,46 @@ public class SkillTreeUI : MonoBehaviour
 
     public void ShowDetails(SkillData skill)
     {
-        if (detailText == null) return;
-
         if (skill == null)
         {
-            detailText.text = DefaultDetail;
+            if (skillNameText != null) skillNameText.text = string.Empty;
+            if (skillStatusAndReqText != null) skillStatusAndReqText.text = string.Empty;
+            if (skillDescriptionText != null) skillDescriptionText.text = DefaultDetail;
+            if (skillIconImage != null) skillIconImage.enabled = false;
             return;
         }
 
-        string status = GetState(skill) switch
+        if (skillNameText != null)
         {
-            SkillState.Unlocked => Colored("Unlocked", unlockedTextColor),
-            SkillState.Available => Colored("Click to unlock", availableTextColor),
-            _ => Colored("Locked", lockedTextColor)
-        };
-        detailText.text = $"<b>{skill.displayName}</b>  ({status})\n{skill.description}{RequirementsText(skill)}";
+            skillNameText.text = skill.displayName;
+        }
+
+        if (skillIconImage != null)
+        {
+            bool hasIcon = skill.icon != null;
+            skillIconImage.sprite = skill.icon;
+            skillIconImage.enabled = hasIcon;
+        }
+
+        if (skillStatusAndReqText != null)
+        {
+            string status = GetState(skill) switch
+            {
+                SkillState.Unlocked => Colored("Desbloqueada", unlockedTextColor),
+                SkillState.Available => Colored("Disponible", availableTextColor),
+                _ => Colored("Bloqueada", lockedTextColor)
+            };
+
+            string reqText = RequirementsText(skill);
+            skillStatusAndReqText.text = string.IsNullOrEmpty(reqText)
+                ? status
+                : $"{status}  •  {reqText}";
+        }
+
+        if (skillDescriptionText != null)
+        {
+            skillDescriptionText.text = skill.description;
+        }
     }
 
     private string RequirementsText(SkillData skill)

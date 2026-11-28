@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: Miedo3
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
   displayName: "El miedo es psicol\xF3gico"
-  description: 
+  description: "Un exhaustivo estudio interno ha concluido que el miedo es una construcci\xF3n
+    mental. En consecuencia, la direcci\xF3n ha decidido dejar de reconocerlo como
+    riesgo laboral. Problema solucionado. \n\nEfecto: Aumenta todav\xEDa m\xE1s la
+    resistencia de los ni\xF1os al p\xE1nico. \r\n"
   icon: {fileID: 0}
   effects:
   - stat: 4

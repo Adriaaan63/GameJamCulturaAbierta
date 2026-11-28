@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: SpawnSpeed2
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
   displayName: Familia Numerosa
-  description: 
+  description: "La direcci\xF3n ha aprobado nuevas ayudas para las familias numerosas.
+    Las solicitudes se han disparado y nuestro departamento de suministros ya se
+    est\xE1 frotando las manos.\n\nEfecto: Aumenta ligeramente la frecuencia de aparici\xF3n
+    de ni\xF1os. \r\n"
   icon: {fileID: 0}
   effects:
   - stat: 1

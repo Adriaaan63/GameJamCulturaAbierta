@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: SpawnSpeed3
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
   displayName: Baby Boom
-  description: 
+  description: "Nuestra campa\xF1a de incentivos a la natalidad ha superado todas
+    las expectativas. Los expertos hablan de una explosi\xF3n demogr\xE1fica. Nosotros
+    preferimos llamarlo crecimiento sostenible. \n\nEfecto: Aumenta moderadamente
+    la frecuencia de aparici\xF3n de ni\xF1os. \r\n"
   icon: {fileID: 0}
   effects:
   - stat: 1

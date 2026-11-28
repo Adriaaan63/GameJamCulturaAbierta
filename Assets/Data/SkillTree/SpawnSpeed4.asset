@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: SpawnSpeed4
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
   displayName: Como Conejos
-  description: 
+  description: "Ante el \xE9xito del programa, la direcci\xF3n ha decidido retirar
+    todas las restricciones reproductivas. Se recomienda a los empleados no hacer
+    preguntas y mantener las f\xE1bricas abiertas las 24 horas. \n\nEfecto: Aumenta
+    considerablemente la frecuencia de aparici\xF3n de ni\xF1os. \r\n"
   icon: {fileID: 0}
   effects:
   - stat: 1
