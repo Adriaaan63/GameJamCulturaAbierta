@@ -12,7 +12,8 @@ public class Spawner : MonoBehaviour
 
     public float spawnRadius = 10;
     public int spawnCount = 10;
-    public float spawnRate = 5f;
+    public float baseSpawnRate = 5f;
+    private float spawnRate = 5f;
     [Tooltip("Only tints the spawn-region gizmo. The boids' colour comes from their fear (see BoidSettings, Debug colour).")]
     public Color colour;
     public GizmoType showSpawnRegion;
@@ -37,7 +38,7 @@ public class Spawner : MonoBehaviour
 
     private float timeRemaining;
     private bool isSpawning;
-
+    
     void Awake()
     {
         if (boidManager == null)
@@ -47,6 +48,7 @@ public class Spawner : MonoBehaviour
 
         timeRemaining = spawnRate;
         isSpawning = true;
+        spawnRate = baseSpawnRate;
     }
 
     void Start()
@@ -180,5 +182,15 @@ public class Spawner : MonoBehaviour
     {
         Gizmos.color = new Color(colour.r, colour.g, colour.b, 0.3f);
         Gizmos.DrawSphere(transform.position, spawnRadius);
+    }
+    
+    void OnEnable ()  => SkillTreeUI.EffectApplied += OnEffect;
+    void OnDisable () => SkillTreeUI.EffectApplied -= OnEffect;
+
+    void OnEffect (StatEffect e) {
+            if(e.stat== StatType.SpawnSpeed)
+            {
+                spawnRate = baseSpawnRate * e.value;
+            }
     }
 }

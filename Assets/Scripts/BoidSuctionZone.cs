@@ -11,9 +11,11 @@ public class BoidSuctionZone : MonoBehaviour
 
     [Header("Capacity & Processing Rate")]
     [Tooltip("Cuántos boids caben a la vez procesándose en la aspiradora (huecos).")]
-    [SerializeField] private float maxCapacity = 3f;
+    [SerializeField] private float baseMaxCapacity = 3f;
+    private float maxCapacity = 3f;
     [Tooltip("Cuántos boids elimina por segundo para liberar huecos.")]
-    [SerializeField] private float processRate = 1f;
+    [SerializeField] private float baseProcessRate = 1f;
+    private float processRate = 1f;
 
     [Header("Debug")]
     [SerializeField] private int capturedCount = 0;
@@ -37,18 +39,22 @@ public class BoidSuctionZone : MonoBehaviour
     {
         if (boidManager == null)
             boidManager = FindAnyObjectByType<BoidManager>();
+        maxCapacity = baseMaxCapacity;
+        processRate = baseProcessRate;
     }
 
     private void OnEnable()
     {
         if (boidManager != null)
             boidManager.RegisterSuctionZone(this);
+        SkillTreeUI.EffectApplied += OnEffect;
     }
 
     private void OnDisable()
     {
         if (boidManager != null)
             boidManager.UnregisterSuctionZone(this);
+        SkillTreeUI.EffectApplied -= OnEffect;
     }
 
     private void Update()
@@ -92,5 +98,18 @@ public class BoidSuctionZone : MonoBehaviour
 
         Gizmos.color = new Color(1f, 0.5f, 0.31f);
         Gizmos.DrawWireSphere(transform.position, suctionRadius);
+    }
+    
+
+// Este es el método. Se llama solo cada vez que se desbloquea una skill.
+    void OnEffect (StatEffect e) {
+        switch (e.stat) {
+            case StatType.ProcessRate:
+                processRate = baseProcessRate*e.value;
+                break;
+            case StatType.MaxCapacity:
+                maxCapacity = baseMaxCapacity * e.value;
+                break;
+        }
     }
 }

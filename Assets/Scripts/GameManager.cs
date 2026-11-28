@@ -10,6 +10,8 @@ public class GameManager : MonoBehaviour
 
     public enum EndAction { NextLevel, RestartLevel, FirstLevel, LoadScene, Nothing }
 
+    private const string AdditiveSceneName = "SkillTree"; // pon aquí el nombre real
+    private bool loadAdditiveAfterLevel;
     [System.Serializable]
     public class LevelData
     {
@@ -149,9 +151,19 @@ public class GameManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (levels.Count > 0 && scene.name == gameSceneName) {
+        if (mode == LoadSceneMode.Additive) return;
+
+        if (levels.Count > 0 && scene.name == gameSceneName)
+        {
             BeginLevel();
-        } else
+
+            if (loadAdditiveAfterLevel)
+            {
+                loadAdditiveAfterLevel = false;
+                SceneManager.LoadScene(AdditiveSceneName, LoadSceneMode.Additive);
+            }
+        }
+        else
         {
             playing = false;
         }
@@ -207,7 +219,10 @@ public class GameManager : MonoBehaviour
                 else if (loopLevels) LoadLevel(0);
                 else GoToMainMenu();
                 break;
-            case EndAction.RestartLevel: LoadLevel(currentLevel); break;
+            case EndAction.RestartLevel:
+                loadAdditiveAfterLevel = true;
+                LoadLevel(currentLevel);
+                break;
             case EndAction.FirstLevel:   LoadLevel(0); break;
             case EndAction.LoadScene:    SceneManager.LoadScene(end.sceneName); break;
             case EndAction.Nothing:      break;

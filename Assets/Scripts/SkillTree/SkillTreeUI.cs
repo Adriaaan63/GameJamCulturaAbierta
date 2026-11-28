@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public enum SkillState
 {
@@ -39,6 +40,8 @@ public class SkillTreeUI : MonoBehaviour
     private readonly HashSet<SkillData> unlocked = new();
     private readonly List<SkillNodeUI> nodes = new();
     private readonly List<SkillLineUI> lines = new();
+    
+    public static event System.Action<StatEffect> EffectApplied;
 
     private void Start()
     {
@@ -57,7 +60,11 @@ public class SkillTreeUI : MonoBehaviour
             }
             nodes.Add(node);
             node.Init(this);
-            if (node.Skill.unlockedAtStart) unlocked.Add(node.Skill);
+            if (node.Skill.unlockedAtStart)
+            {
+                //unlocked.Add(node.Skill);
+                Unlock(node.Skill);
+            }
         }
 
         foreach (var line in panel.GetComponentsInChildren<SkillLineUI>(true))
@@ -69,6 +76,7 @@ public class SkillTreeUI : MonoBehaviour
         Refresh();
         ShowDetails(null);
         panel.SetActive(startOpen);
+        ApplyPause();
     }
 
     private void OnEnable()
@@ -83,11 +91,18 @@ public class SkillTreeUI : MonoBehaviour
         toggleAction.Disable();
     }
 
+    private void ApplyPause()
+    {
+        Time.timeScale = panel.activeSelf ? 0f : 1f;
+    }
+    
     private void OnTogglePerformed(InputAction.CallbackContext _) => Toggle();
 
     public void Toggle()
     {
-        if (panel != null) panel.SetActive(!panel.activeSelf);
+        if (panel == null) return;
+        panel.SetActive(!panel.activeSelf);
+        ApplyPause();
     }
 
     public SkillState GetState(SkillData skill)
@@ -109,7 +124,8 @@ public class SkillTreeUI : MonoBehaviour
             return;
         }
 
-        unlocked.Add(skill);
+        //unlocked.Add(skill);
+        Unlock(skill);
         Refresh();
         ShowDetails(skill);
     }
@@ -174,4 +190,18 @@ public class SkillTreeUI : MonoBehaviour
         SkillState.Available => availableC,
         _ => lockedC
     };
+    
+    private void Unlock(SkillData skill)
+    {
+        if (!unlocked.Add(skill)) return;
+        foreach (var effect in skill.effects) EffectApplied?.Invoke(effect);
+    }
+    
+    public void Close()
+    {
+        Time.timeScale = 1f;
+        SceneManager.UnloadSceneAsync(gameObject.scene);
+    }
+    
+    private void OnDestroy() => Time.timeScale = 1f;
 }
