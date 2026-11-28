@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: Miedo1
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
   displayName: Piel de gallina
-  description: 
+  description: "Nuestro departamento de Recursos Humanos ha detectado que algunos
+    de nuestros peque\xF1os colaboradores presentan s\xEDntomas de nerviosismo ante
+    la presencia del Sacamantecas. "
   icon: {fileID: 0}
   effects:
   - stat: 4

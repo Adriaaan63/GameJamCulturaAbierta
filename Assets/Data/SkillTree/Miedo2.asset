@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: Miedo2
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
   displayName: Trauma infantil
-  description: 
+  description: "Tras numerosas quejas, la direcci\xF3n ha decidido implementar un
+    programa de exposici\xF3n prolongada al estr\xE9s. Los resultados son prometedores,
+    aunque los participantes se niegan a repetir. "
   icon: {fileID: 0}
   effects:
   - stat: 4

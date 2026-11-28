@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: MaxCapacity1
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
   displayName: Donde caben dos 1
-  description: 
+  description: "Tras detectar peque\xF1as demoras en el servicio de recogida, la
+    direcci\xF3n ha decidido agilizar el embarque. Se ruega a los pasajeros que no
+    se entretengan y pasen al fondo. "
   icon: {fileID: 0}
   effects:
   - stat: 3

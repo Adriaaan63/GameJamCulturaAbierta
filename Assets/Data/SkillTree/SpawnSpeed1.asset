@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: SpawnSpeed1
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
   displayName: Fertilidad Asistida
-  description: 
+  description: "Ante la creciente demanda de materia prima, la direcci\xF3n ha puesto
+    en marcha un ambicioso programa de fomento de la natalidad. Porque el futuro
+    de nuestra empresa est\xE1 en manos de los m\xE1s peque\xF1os. "
   icon: {fileID: 0}
   effects:
   - stat: 1
