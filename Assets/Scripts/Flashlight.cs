@@ -1,4 +1,7 @@
+using System;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
+using Random = UnityEngine.Random;
 
 /// <summary>
 /// A flat (XZ plane) cone with its apex on this object, aimed along this object's forward.
@@ -17,10 +20,12 @@ public class Flashlight : MonoBehaviour {
     
     [Header ("Beam")]
     public bool active = true;
-    public float range = 12f;
-    [Range (5f, 85f)]
-    public float halfAngle = 30f;
 
+    private float baseRange = 12f;
+    public float range = 12f;
+    [Range(5f, 85f)]
+    public float baseHalfAngle = 30f;
+    public float halfAngle = 30f;
     [Header ("Herding")]
     [Tooltip ("How strongly boids inside the beam are pushed along the aim direction.")]
     public float herdWeight = 6f;
@@ -54,6 +59,11 @@ public class Flashlight : MonoBehaviour {
     [Header ("Debug")]
     [Tooltip ("How far above this object the yellow cone gizmo is drawn, so the floor doesn't hide it.")]
     public float gizmoLift = 0.3f;
+
+    private void Awake()
+    {
+        halfAngle = baseHalfAngle;
+    }
 
     // Per-boid memory of its relationship with the edges. Owned by the Boid, updated here.
     public struct EdgeState {
@@ -283,4 +293,19 @@ public class Flashlight : MonoBehaviour {
             prev = p;
         }
     }
+
+    void OnEffect(StatEffect e)
+    {
+        Debug.Log("entrado a oneffect");
+        if (e.stat == StatType.Flashlight)
+        {
+            Debug.Log("halfAngle="+halfAngle);
+            halfAngle = baseHalfAngle*e.value;
+            range = baseRange*Mathf.Max(e.value/2,1);
+            Debug.Log("halfAngle="+halfAngle);
+        }
+    }
+    
+    void OnEnable ()  => SkillTreeUI.EffectApplied += OnEffect;
+    void OnDisable () => SkillTreeUI.EffectApplied -= OnEffect;
 }

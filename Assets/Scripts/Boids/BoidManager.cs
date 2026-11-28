@@ -57,6 +57,8 @@ public class BoidManager : MonoBehaviour {
             b.gameObject.SetActive(false);
             inactivePool.Push(b);
         }
+
+        settings.fearRiseRate = settings.baseFearRiseRate;
     }
 
     public void RegisterSuctionZone(BoidSuctionZone zone)
@@ -265,6 +267,19 @@ public class BoidManager : MonoBehaviour {
     }
     // ------------------------------------------------------------------------------
 
+    void OnEnable ()=> SkillTreeUI.EffectApplied += OnEffect;
+
+    void OnDisable () => SkillTreeUI.EffectApplied -= OnEffect;
+
+    void OnEffect (StatEffect e)
+    {
+        if (e.stat == StatType.Miedo)
+        {
+            settings.fearRiseRate = settings.baseFearRiseRate * e.value;
+        }
+        
+    }
+    
     public struct BoidData {
         public Vector3 position;
         public Vector3 direction;

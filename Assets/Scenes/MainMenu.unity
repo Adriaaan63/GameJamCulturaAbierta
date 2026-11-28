@@ -425,6 +425,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2692358846466056803, guid: 6596b91c1f6e74f44b8d3859ee5cdace, type: 3}
+      propertyPath: onWin.action
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2692358846466056803, guid: 6596b91c1f6e74f44b8d3859ee5cdace, type: 3}
+      propertyPath: onLose.action
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2692358846466056803, guid: 6596b91c1f6e74f44b8d3859ee5cdace, type: 3}
+      propertyPath: onWin.sceneName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2692358846466056803, guid: 6596b91c1f6e74f44b8d3859ee5cdace, type: 3}
+      propertyPath: onLose.sceneName
+      value: MainMenu
+      objectReference: {fileID: 0}
     - target: {fileID: 3990334901191695909, guid: 6596b91c1f6e74f44b8d3859ee5cdace, type: 3}
       propertyPath: m_Name
       value: GameManager

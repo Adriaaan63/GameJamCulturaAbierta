@@ -8,6 +8,9 @@ public class SkillData : ScriptableObject
     public string displayName = "Skill";
     [TextArea(2, 4)] public string description;
     public Sprite icon;
+    
+    [Header("Effects")]
+    public List<StatEffect> effects = new();
 
     [Header("Unlock")]
     [Tooltip("If checked, the player starts with this skill")]

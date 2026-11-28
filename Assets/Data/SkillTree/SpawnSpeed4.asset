@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 019d61f6bfc2943d3b9ae3dda362f3a2, type: 3}
+  m_Name: SpawnSpeed4
+  m_EditorClassIdentifier: Assembly-CSharp::SkillData
+  displayName: Como Conejos
+  description: 
+  icon: {fileID: 0}
+  effects:
+  - stat: 1
+    value: 2.5
+  unlockedAtStart: 0
+  prerequisites:
+  - {fileID: 11400000, guid: ebf03fdd7c0a5994a99b39be08eff777, type: 2}

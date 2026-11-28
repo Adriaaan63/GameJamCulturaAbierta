@@ -40,6 +40,8 @@ public class BoidSettings : ScriptableObject {
 
     [Header ("State: Fleeing / fear")]
     [Tooltip ("Fear gained per second at maximum threat (inside the beam next to the player). 0.35 = about 3 s to reach 1.")]
+    public float baseFearRiseRate = 0.35f;
+    [System.NonSerialized]
     public float fearRiseRate = 0.35f;
     [Tooltip ("Fear lost per second when nothing threatens the boid.")]
     public float fearFallRate = 0.25f;

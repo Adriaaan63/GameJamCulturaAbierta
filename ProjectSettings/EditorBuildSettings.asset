@@ -20,5 +20,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/LoseScreen.unity
     guid: 361ed7fc60d5fd040a2bfe0d36a1541a
+  - enabled: 1
+    path: Assets/Scenes/SkillTree.unity
+    guid: 73c5602afdc1e3e46bf154d585fe06bc
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: c36d33ed9bc53e540a23aec6c2b8fcfa, type: 3}

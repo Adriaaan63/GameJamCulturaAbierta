@@ -10,10 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 019d61f6bfc2943d3b9ae3dda362f3a2, type: 3}
-  m_Name: NewSkill
+  m_Name: SpawnSpeed2
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
-  displayName: Skill
+  displayName: Familia Numerosa
   description: 
   icon: {fileID: 0}
+  effects:
+  - stat: 1
+    value: 1.5
   unlockedAtStart: 0
-  prerequisites: []
+  prerequisites:
+  - {fileID: 11400000, guid: bea4c28f5a2f6fd4baf30161365ed0fb, type: 2}
