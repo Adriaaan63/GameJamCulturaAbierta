@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 019d61f6bfc2943d3b9ae3dda362f3a2, type: 3}
   m_Name: Linterna1
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
-  displayName: "H\xE1gase la luz"
-  description: "Todo negocio de \xE9xito necesita una visi\xF3n clara de futuro.
-    Por ello, la direcci\xF3n ha aprobado la adquisici\xF3n de una linterna de \xFAltima
-    generaci\xF3n. "
+  displayName: "Iluminaci\xF3n estrat\xE9gica "
+  description: "Tras una exhaustiva evaluaci\xF3n de riesgos, la direcci\xF3n ha
+    concluido que resulta m\xE1s f\xE1cil encontrar ni\xF1os cuando se les puede
+    ver. "
   icon: {fileID: 0}
   effects:
   - stat: 0

@@ -12,8 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 019d61f6bfc2943d3b9ae3dda362f3a2, type: 3}
   m_Name: Carruaje
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
-  displayName: Carruaje
-  description: 
+  displayName: 'Transporte escolar '
+  description: "Con el objetivo de garantizar un servicio de recogida infantil eficiente,
+    la direcci\xF3n ha puesto a disposici\xF3n de sus empleados una moderna flota
+    de carruajes. Rogamos a los pasajeros que mantengan los brazos y las piernas
+    dentro del veh\xEDculo. "
   icon: {fileID: 0}
   effects: []
   unlockedAtStart: 1

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 019d61f6bfc2943d3b9ae3dda362f3a2, type: 3}
+  m_Name: MaxCapacity4
+  m_EditorClassIdentifier: Assembly-CSharp::SkillData
+  displayName: Donde cabe uno, caben dos IV
+  description: "Tras a\xF1os de investigaci\xF3n, la direcci\xF3n ha llegado a una
+    conclusi\xF3n hist\xF3rica: los l\xEDmites de capacidad son una construcci\xF3n
+    social. El departamento de prevenci\xF3n de riesgos laborales ha sido disuelto
+    por falta de productividad. "
+  icon: {fileID: 0}
+  effects:
+  - stat: 3
+    value: 3
+  unlockedAtStart: 0
+  prerequisites:
+  - {fileID: 11400000, guid: be3372f8fee0aa441ad800c8204a68db, type: 2}

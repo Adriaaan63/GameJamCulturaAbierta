@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 019d61f6bfc2943d3b9ae3dda362f3a2, type: 3}
   m_Name: MaxCapacity2
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
-  displayName: Donde caben dos 2
+  displayName: 'Donde cabe uno, caben dos II '
   description: "Los resultados del nuevo sistema de embarque han sido excelentes.
     La direcci\xF3n ha decidido eliminar las pausas entre pasajeros. El concepto
     de espacio personal queda pendiente de revisi\xF3n."
